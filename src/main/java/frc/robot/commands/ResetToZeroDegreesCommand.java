@@ -8,15 +8,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class ResetToZeroDegreesCommand extends Command {
-  private DriveSubsystem m_driveSubsystem;
+	private DriveSubsystem m_driveSubsystem;
 
-  public ResetToZeroDegreesCommand() {
-    m_driveSubsystem = DriveSubsystem.get();
-  }
+	public ResetToZeroDegreesCommand() {
+		m_driveSubsystem = DriveSubsystem.get();
+	}
 
-  @Override
-  public void initialize() {
-    // m_driveSubsystem.resetHeading();
-    m_driveSubsystem.setWheelRotationToZeroDegrees();
-  }
+	@Override
+	public void initialize() {
+		// m_driveSubsystem.resetHeading();
+		m_driveSubsystem.setWheelRotationToZeroDegrees();
+	}
 }
