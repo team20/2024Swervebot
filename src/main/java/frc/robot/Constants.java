@@ -108,6 +108,7 @@ public final class Constants {
 	}
 
 	public static final class SwerveConstants {
+		public static final double kModuleResponseTimeSeconds = 0.02;
 		public static final double gearRatio = 8.14;
 		public static final double wheelDiameter = 0.1016; // in meters
 		// public static final double ticksPerAxisRev = 42;

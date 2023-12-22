@@ -74,6 +74,14 @@ public class SwerveModule {
 		return this.m_steerMotor;
 	}
 
+	public double getDriveSpeed() {
+		return m_driveMotor.getAppliedOutput();
+	}
+
+	public double getModuleAngle() {
+		return m_CANCoder.getAbsolutePosition().getValueAsDouble() * 360;
+	}
+
 	public void setModuleState(SwerveModuleState state) {
 		// Will allow the module to spin to 180 deg + target angle
 		// but swap drive speed if that is quicker than normal
