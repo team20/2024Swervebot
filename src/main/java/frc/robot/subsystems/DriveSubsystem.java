@@ -7,8 +7,11 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.DriveConstants.*;
 import static frc.robot.Constants.SwerveConstants.*;
 
+import java.util.function.Supplier;
+
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -21,7 +24,9 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.SwerveModule;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -128,7 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
 		setSteerMotors(0, 0, 0, 0);
 	}
 
-	public SwerveModuleState[] drive(ChassisSpeeds speeds) {
+	public SwerveModuleState[] calculateModuleStates(ChassisSpeeds speeds) {
 		var transform = new Transform2d(speeds.vxMetersPerSecond * kModuleResponseTimeSeconds,
 				speeds.vyMetersPerSecond * kModuleResponseTimeSeconds, new Rotation2d(
 						speeds.omegaRadiansPerSecond * kModuleResponseTimeSeconds));
@@ -143,6 +148,25 @@ public class DriveSubsystem extends SubsystemBase {
 		m_targetModuleStatePublisher.set(states);
 		m_field.setRobotPose(m_pose);
 		return states;
+	}
+
+	public Command driveCommand(Supplier<Double> xAxisDrive, Supplier<Double> yAxisDrive,
+			Supplier<Double> rotationAxis) {
+		return run(() -> {
+			// Get the forward, strafe, and rotation speed, using a deadband on the joystick
+			// input so slight movements don't move the robot
+			double fwdSpeed = -MathUtil.applyDeadband(yAxisDrive.get(), ControllerConstants.kDeadzone);
+			double strSpeed = -MathUtil.applyDeadband(xAxisDrive.get(), ControllerConstants.kDeadzone);
+			double rotSpeed = MathUtil.applyDeadband(rotationAxis.get(), ControllerConstants.kDeadzone);
+
+			ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(fwdSpeed, strSpeed, rotSpeed,
+					Rotation2d.fromDegrees(DriveSubsystem.get().getHeading()));
+
+			// Now use this in our kinematics
+			SwerveModuleState[] moduleStates = calculateModuleStates(speeds);
+
+			setSwerveStates(moduleStates);
+		});
 	}
 
 	/**

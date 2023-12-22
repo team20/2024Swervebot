@@ -40,7 +40,7 @@ public class RobotContainer {
 	 * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	 */
 	private void configureButtonBindings() {
-		m_driveSubsystem.setDefaultCommand(new DefaultDriveCommand(m_driveSubsystem,
+		m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveCommand(
 				() -> m_controller.getRawAxis(Axis.kLeftX),
 				() -> m_controller.getRawAxis(Axis.kLeftY),
 				() -> m_controller.getRawAxis(Axis.kRightX)));

@@ -49,7 +49,7 @@ public class DefaultDriveCommand extends Command {
 				fwdSpeed, strSpeed, rotSpeed, Rotation2d.fromDegrees(DriveSubsystem.get().getHeading()));
 
 		// Now use this in our kinematics
-		SwerveModuleState[] moduleStates = m_driveSubsystem.drive(speeds);
+		SwerveModuleState[] moduleStates = m_driveSubsystem.calculateModuleStates(speeds);
 
 		DriveSubsystem.get().setSwerveStates(moduleStates);
 	}
