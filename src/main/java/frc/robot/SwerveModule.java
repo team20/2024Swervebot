@@ -19,19 +19,18 @@ import frc.robot.Constants.SwerveConstants;
 
 /** Add your docs here. */
 public class SwerveModule {
-	private PIDController m_PIDController = new PIDController(DriveConstants.kP, DriveConstants.kI, DriveConstants.kD,
-			DriveConstants.kSteerPeriod);
+	private PIDController m_PIDController = new PIDController(DriveConstants.kP, DriveConstants.kI, DriveConstants.kD);
 	private CANcoder m_CANCoder;
 	private CANSparkMax m_driveMotor;
 	public RelativeEncoder m_driveEncoder;
 	private CANSparkMax m_steerMotor;
 
-	public SwerveModule(int CANport, int drivePort, int steerPort, double magnetOfset, boolean inverted) {
+	public SwerveModule(int CANport, int drivePort, int steerPort, double magnetOffset, boolean inverted) {
 		m_CANCoder = new CANcoder(CANport);
 		m_driveMotor = new CANSparkMax(drivePort, MotorType.kBrushless);
 		m_steerMotor = new CANSparkMax(steerPort, MotorType.kBrushless);
 		m_driveEncoder = m_driveMotor.getEncoder();
-		m_CANCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(-magnetOfset));
+		m_CANCoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(-magnetOffset));
 		configMotorController(m_driveMotor);
 		m_driveMotor.setInverted(inverted);
 		configMotorController(m_steerMotor);
@@ -42,11 +41,7 @@ public class SwerveModule {
 	/***
 	 * Configures our motors with the exact same settings
 	 * 
-	 * @param motorController);
-	 * 
-	 *                          }
-	 * 
-	 *                          The CANSparkMax to configure
+	 * @param motorController The CANSparkMax to configure
 	 */
 	public static void configMotorController(CANSparkMax motorController) {
 		motorController.restoreFactoryDefaults();

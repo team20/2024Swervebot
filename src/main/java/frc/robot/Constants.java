@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants. This class should not be used for any other
@@ -20,7 +22,7 @@ public final class Constants {
 	public static final class ControllerConstants {
 		public static final int kDriverControllerPort = 0;
 		public static final int kOperatorControllerPort = 1;
-		public static final double kDeadzone = 0.2;
+		public static final double kDeadzone = 0.1;
 		public static final double kTriggerDeadzone = .05;
 
 		public static final class Axis {
@@ -33,12 +35,18 @@ public final class Constants {
 		}
 
 		public static final class Button {
+			/** Left middle button */
 			public static final int kSquare = 1;
+			/** Bottom button */
 			public static final int kX = 2;
+			/** Right middle button */
 			public static final int kCircle = 3;
+			/** Top button */
 			public static final int kTriangle = 4;
 			public static final int kLeftBumper = 5;
 			public static final int kRightBumper = 6;
+			public static final int kLeftTrigger = 7;
+			public static final int kRightTrigger = 8;
 			public static final int kShare = 9;
 			public static final int kOptions = 10;
 			public static final int kLeftStick = 11;
@@ -113,6 +121,10 @@ public final class Constants {
 		public static final double BackLeftZero = 277.47;
 		public static final double BackRightZero = 212.73;
 
+		public static final Translation2d kFrontLeftLocation = new Translation2d(0.381, 0.381);
+		public static final Translation2d kFrontRightLocation = new Translation2d(0.381, -0.381);
+		public static final Translation2d kBackLeftLocation = new Translation2d(-0.381, 0.381);
+		public static final Translation2d kBackRightLocation = new Translation2d(-0.381, -0.381);
 		// These encoder set points should be correct
 		// public static final double FrontLeftZero = -56.89;
 		// public static final double FrontRightZero = -65.66;
