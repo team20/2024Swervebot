@@ -150,25 +150,6 @@ public class DriveSubsystem extends SubsystemBase {
 		return states;
 	}
 
-	public Command driveCommand(Supplier<Double> xAxisDrive, Supplier<Double> yAxisDrive,
-			Supplier<Double> rotationAxis) {
-		return run(() -> {
-			// Get the forward, strafe, and rotation speed, using a deadband on the joystick
-			// input so slight movements don't move the robot
-			double fwdSpeed = -MathUtil.applyDeadband(yAxisDrive.get(), ControllerConstants.kDeadzone);
-			double strSpeed = -MathUtil.applyDeadband(xAxisDrive.get(), ControllerConstants.kDeadzone);
-			double rotSpeed = MathUtil.applyDeadband(rotationAxis.get(), ControllerConstants.kDeadzone);
-
-			ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(fwdSpeed, strSpeed, rotSpeed,
-					Rotation2d.fromDegrees(DriveSubsystem.get().getHeading()));
-
-			// Now use this in our kinematics
-			SwerveModuleState[] moduleStates = calculateModuleStates(speeds);
-
-			setSwerveStates(moduleStates);
-		});
-	}
-
 	/**
 	 * Makes our drive motors spin at the specified speeds
 	 * 
