@@ -16,22 +16,22 @@ public class SwerveTest {
 		var expectedStates = new SwerveModuleState[4];
 
 		// Go Northwest
-		var nwStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(1, 1, 0), false);
+		var nwStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(1, 1, 0));
 		Arrays.fill(expectedStates, new SwerveModuleState(1, Rotation2d.fromDegrees(45)));
 		assertArrayEquals(expectedStates, nwStates);
 
 		// Go Northeast
-		var neStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(1, -1, 0), false);
+		var neStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(1, -1, 0));
 		Arrays.fill(expectedStates, new SwerveModuleState(1, Rotation2d.fromDegrees(-45)));
 		assertArrayEquals(expectedStates, neStates);
 
 		// Go Southwest
-		var swStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(-1, 1, 0), false);
+		var swStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(-1, 1, 0));
 		Arrays.fill(expectedStates, new SwerveModuleState(1, Rotation2d.fromDegrees(135)));
 		assertArrayEquals(expectedStates, swStates);
 
 		// Go Southwest
-		var seStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(-1, -1, 0), false);
+		var seStates = driveSubsystem.calculateModuleStates(new ChassisSpeeds(-1, -1, 0));
 		Arrays.fill(expectedStates, new SwerveModuleState(1, Rotation2d.fromDegrees(225)));
 		assertArrayEquals(expectedStates, seStates);
 	}
