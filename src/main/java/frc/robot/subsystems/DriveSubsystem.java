@@ -7,11 +7,8 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.DriveConstants.*;
 import static frc.robot.Constants.SwerveConstants.*;
 
-import java.util.function.Supplier;
-
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -24,9 +21,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ControllerConstants;
 import frc.robot.SwerveModule;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -75,28 +70,28 @@ public class DriveSubsystem extends SubsystemBase {
 					kFrontLeftCANCoderPort,
 					kFrontLeftDrivePort,
 					kFrontLeftSteerPort,
-					FrontLeftZero,
+					kFrontLeftEncoderOffset,
 					kFrontLeftDriveInverted);
 
 			m_frontRight = new SwerveModule(
 					kFrontRightCANCoderPort,
 					kFrontRightDrivePort,
 					kFrontRightSteerPort,
-					FrontRightZero,
+					kFrontRightEncoderOffset,
 					kFrontRightDriveInverted);
 
 			m_backLeft = new SwerveModule(
 					kBackLeftCANCoderPort,
 					kBackLeftDrivePort,
 					kBackLeftSteerPort,
-					BackLeftZero,
+					kBackLeftEncoderOffset,
 					kBackLeftDriveInverted);
 
 			m_backRight = new SwerveModule(
 					kBackRightCANCoderPort,
 					kBackRightDrivePort,
 					kBackRightSteerPort,
-					BackRightZero,
+					kBackRightEncoderOffset,
 					kBackRightDriveInverted);
 		}
 		new Thread(() -> {
@@ -134,6 +129,7 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public SwerveModuleState[] calculateModuleStates(ChassisSpeeds speeds) {
+		speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_gyro.getRotation2d());
 		var transform = new Transform2d(speeds.vxMetersPerSecond * kModuleResponseTimeSeconds,
 				speeds.vyMetersPerSecond * kModuleResponseTimeSeconds, new Rotation2d(
 						speeds.omegaRadiansPerSecond * kModuleResponseTimeSeconds));

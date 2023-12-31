@@ -108,7 +108,7 @@ public final class Constants {
 	}
 
 	public static final class SwerveConstants {
-		public static final double kModuleResponseTimeSeconds = 0.02;
+		public static final double kModuleResponseTimeSeconds = 0.1;
 		public static final double gearRatio = 8.14;
 		public static final double wheelDiameter = 0.1016; // in meters
 		// public static final double ticksPerAxisRev = 42;
@@ -117,20 +117,14 @@ public final class Constants {
 		public static final double kMotorRevsPerMeter = gearRatio / (Math.PI * wheelDiameter);
 
 		// These set points resulted in back being front, front is back
-		public static final double FrontLeftZero = 124.89;
-		public static final double FrontRightZero = 115.66;
-		public static final double BackLeftZero = 277.47;
-		public static final double BackRightZero = 212.73;
+		public static final double kFrontLeftEncoderOffset = -0.139648;
+		public static final double kFrontRightEncoderOffset = -0.336182;
+		public static final double kBackLeftEncoderOffset = 0.262451;
+		public static final double kBackRightEncoderOffset = -0.376709;
 
 		public static final Translation2d kFrontLeftLocation = new Translation2d(0.381, 0.381);
 		public static final Translation2d kFrontRightLocation = new Translation2d(0.381, -0.381);
 		public static final Translation2d kBackLeftLocation = new Translation2d(-0.381, 0.381);
 		public static final Translation2d kBackRightLocation = new Translation2d(-0.381, -0.381);
-		// These encoder set points should be correct
-		// public static final double FrontLeftZero = -56.89;
-		// public static final double FrontRightZero = -65.66;
-		// public static final double BackLeftZero = 97.47;
-		// public static final double BackRightZero = 32.73;
-
 	}
 }
