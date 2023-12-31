@@ -41,8 +41,8 @@ public class RobotContainer {
 	 */
 	private void configureButtonBindings() {
 		m_driveSubsystem.setDefaultCommand(new DefaultDriveCommand(m_driveSubsystem,
-				() -> m_controller.getRawAxis(Axis.kLeftX),
 				() -> m_controller.getRawAxis(Axis.kLeftY),
+				() -> m_controller.getRawAxis(Axis.kLeftX),
 				() -> m_controller.getRawAxis(Axis.kRightX)));
 	}
 

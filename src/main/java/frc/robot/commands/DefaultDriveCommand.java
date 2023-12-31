@@ -18,15 +18,15 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class DefaultDriveCommand extends Command {
 	private final DriveSubsystem m_driveSubsystem;
-	private Supplier<Double> m_yAxisDrive;
-	private Supplier<Double> m_xAxisDrive;
+	private Supplier<Double> m_forwardSpeed;
+	private Supplier<Double> m_strafeSpeed;
 	private Supplier<Double> m_rotationAxis;
 
-	public DefaultDriveCommand(DriveSubsystem driveSubsystem, Supplier<Double> xAxisDrive, Supplier<Double> yAxisDrive,
-			Supplier<Double> rotationAxis) {
+	public DefaultDriveCommand(DriveSubsystem driveSubsystem, Supplier<Double> forwardSpeed,
+			Supplier<Double> strafeSpeed, Supplier<Double> rotationAxis) {
 		m_driveSubsystem = driveSubsystem;
-		m_yAxisDrive = yAxisDrive;
-		m_xAxisDrive = xAxisDrive;
+		m_forwardSpeed = forwardSpeed;
+		m_strafeSpeed = strafeSpeed;
 		m_rotationAxis = rotationAxis;
 		addRequirements(m_driveSubsystem);
 	}
@@ -40,8 +40,8 @@ public class DefaultDriveCommand extends Command {
 	public void execute() {
 		// Get the forward, strafe, and rotation speed, using a deadband on the joystick
 		// input so slight movements don't move the robot
-		double fwdSpeed = -MathUtil.applyDeadband(m_yAxisDrive.get(), ControllerConstants.kDeadzone);
-		double strSpeed = -MathUtil.applyDeadband(m_xAxisDrive.get(), ControllerConstants.kDeadzone);
+		double fwdSpeed = -MathUtil.applyDeadband(m_forwardSpeed.get(), ControllerConstants.kDeadzone);
+		double strSpeed = -MathUtil.applyDeadband(m_strafeSpeed.get(), ControllerConstants.kDeadzone);
 		double rotSpeed = MathUtil.applyDeadband(m_rotationAxis.get(), ControllerConstants.kDeadzone);
 
 		ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
