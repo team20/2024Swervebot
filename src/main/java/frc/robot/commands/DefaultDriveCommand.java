@@ -47,6 +47,6 @@ public class DefaultDriveCommand extends Command {
 		ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
 				fwdSpeed, strSpeed, rotSpeed, Rotation2d.fromDegrees(DriveSubsystem.get().getHeading()));
 
-		m_driveSubsystem.setSwerveStates(m_driveSubsystem.calculateModuleStates(speeds));
+		m_driveSubsystem.setSwerveStates(m_driveSubsystem.calculateModuleStates(speeds, true));
 	}
 }

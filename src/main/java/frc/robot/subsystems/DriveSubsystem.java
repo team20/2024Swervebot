@@ -128,8 +128,10 @@ public class DriveSubsystem extends SubsystemBase {
 		setSteerMotors(0, 0, 0, 0);
 	}
 
-	public SwerveModuleState[] calculateModuleStates(ChassisSpeeds speeds) {
-		speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_gyro.getRotation2d());
+	public SwerveModuleState[] calculateModuleStates(ChassisSpeeds speeds, boolean isFieldRelative) {
+		if (isFieldRelative) {
+			speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_heading);
+		}
 		var transform = new Transform2d(speeds.vxMetersPerSecond * kModuleResponseTimeSeconds,
 				speeds.vyMetersPerSecond * kModuleResponseTimeSeconds, new Rotation2d(
 						speeds.omegaRadiansPerSecond * kModuleResponseTimeSeconds));
