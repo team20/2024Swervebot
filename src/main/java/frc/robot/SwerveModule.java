@@ -85,6 +85,7 @@ public class SwerveModule {
 	public void setModuleState(SwerveModuleState state) {
 		// Will allow the module to spin to 180 deg + target angle
 		// but swap drive speed if that is quicker than normal
+		// TODO: angle should be module angle, not target state angle
 		state = SwerveModuleState.optimize(state, state.angle);
 		// Set drive speed
 		m_driveMotor.set(state.speedMetersPerSecond * DriveConstants.kDriveScale);
