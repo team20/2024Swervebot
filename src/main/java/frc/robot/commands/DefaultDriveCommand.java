@@ -40,13 +40,14 @@ public class DefaultDriveCommand extends Command {
 	public void execute() {
 		// Get the forward, strafe, and rotation speed, using a deadband on the joystick
 		// input so slight movements don't move the robot
-		double fwdSpeed = -MathUtil.applyDeadband(m_forwardSpeed.get(), ControllerConstants.kDeadzone);
-		double strSpeed = -MathUtil.applyDeadband(m_strafeSpeed.get(), ControllerConstants.kDeadzone);
-		double rotSpeed = MathUtil.applyDeadband(m_rotationAxis.get(), ControllerConstants.kDeadzone);
+		double fwdSpeed = -MathUtil.applyDeadband(m_forwardSpeed.get(), ControllerConstants.kDeadzone) * 0.5;
+		double strSpeed = -MathUtil.applyDeadband(m_strafeSpeed.get(), ControllerConstants.kDeadzone) * 0.5;
+		double rotSpeed = MathUtil.applyDeadband(m_rotationAxis.get(), ControllerConstants.kDeadzone) * 0.5;
 
 		ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-				fwdSpeed, strSpeed, rotSpeed, Rotation2d.fromDegrees(DriveSubsystem.get().getHeading()));
+		fwdSpeed, strSpeed, rotSpeed, DriveSubsystem.get().getHeading());
 
-		m_driveSubsystem.setSwerveStates(m_driveSubsystem.calculateModuleStates(speeds, true));
+		m_driveSubsystem.setSwerveStates(
+				m_driveSubsystem.calculateModuleStates(speeds, false));
 	}
 }

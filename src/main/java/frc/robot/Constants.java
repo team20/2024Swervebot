@@ -99,9 +99,9 @@ public final class Constants {
 		public static final double kTrackWidth = 21.5;
 		public static final double kSteerPeriod = 0.02;
 		public static final boolean kFrontLeftDriveInverted = true;
-		public static final boolean kBackLeftDriveInverted = true;
-		public static final boolean kFrontRightDriveInverted = false;
-		public static final boolean kBackRightDriveInverted = false;
+		public static final boolean kBackLeftDriveInverted = false;
+		public static final boolean kFrontRightDriveInverted = true;
+		public static final boolean kBackRightDriveInverted = true;
 		// Speed multiplier to make sure the robot doesn't crash into something when
 		// testing, because crashing into people's shins would be bad
 		public static final double kSpeedMultiplier = 0.25;

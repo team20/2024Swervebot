@@ -108,8 +108,8 @@ public class DriveSubsystem extends SubsystemBase {
 		return s_subsystem;
 	}
 
-	public double getHeading() {
-		return -m_gyro.getYaw();
+	public Rotation2d getHeading() {
+		return m_gyro.getRotation2d();
 	}
 
 	public void resetHeading() {
@@ -130,7 +130,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 	public SwerveModuleState[] calculateModuleStates(ChassisSpeeds speeds, boolean isFieldRelative) {
 		if (isFieldRelative) {
-			speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_heading);
+			speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getHeading());
 		}
 		var transform = new Transform2d(speeds.vxMetersPerSecond * kModuleResponseTimeSeconds,
 				speeds.vyMetersPerSecond * kModuleResponseTimeSeconds, new Rotation2d(
@@ -139,7 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
 		m_pose = m_pose.plus(transform);
 		m_heading = m_pose.getRotation();
 		m_posePublisher.set(m_pose);
-		SmartDashboard.putNumber("Heading", m_gyro.getRotation2d().getRadians());
+		SmartDashboard.putNumber("Heading", getHeading().getRadians());
 
 		SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
 		SwerveDriveKinematics.desaturateWheelSpeeds(states, 1);
