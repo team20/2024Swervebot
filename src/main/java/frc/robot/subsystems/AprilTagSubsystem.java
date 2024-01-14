@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,25 +30,23 @@ public class AprilTagSubsystem extends SubsystemBase {
 		s_subsystem = this;
 
 		// Subscriber
-		try {
-			NetworkTableInstance ins = NetworkTableInstance.getDefault(); // gets the NetworkTable
-			NetworkTable table = ins.getTable("limelight"); // gets the Limelight table
-			var v = table.getDoubleArrayTopic("botpose"); // gets the topic named botpose
-			var s = v.subscribe(new double[6]); // subscribe to the topic named botpose
-			ins.addListener(s, EnumSet.of(NetworkTableEvent.Kind.kValueAll), event -> {
-				TimestampedDoubleArray a = s.getAtomic();
-				if (a.timestamp != 0)
-					botpose = a;
-				// double[] copy = Arrays.copyOf(a.value, a.value.length);
-				// double[] copy = new double[6];
-				double[] pose2d = { a.value[0] + 8.27/* 6.351 */, a.value[1] + 4.1, a.value[5] };
-				// copy[0] *= -1;
-				SmartDashboard.putNumberArray("Pose2D", pose2d);
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-			;
-		}
+		NetworkTableInstance ins = NetworkTableInstance.getDefault(); // gets the NetworkTable
+		NetworkTable table = ins.getTable("limelight"); // gets the Limelight table
+		var v = table.getDoubleArrayTopic("botpose"); // gets the topic named botpose
+		var s = v.subscribe(new double[6]); // subscribe to the topic named botpose
+		ins.addListener(s, EnumSet.of(NetworkTableEvent.Kind.kValueAll), event -> changedBotPose(event, s));
+	}
+
+	private void changedBotPose(NetworkTableEvent event, DoubleArraySubscriber s) {
+		TimestampedDoubleArray a = s.getAtomic();
+		if (a.timestamp != 0)
+			botpose = a;
+		double[] pose2d = { a.value[0] + 8.27/* 6.351 */, a.value[1] + 4.1, a.value[5] };
+		SmartDashboard.putNumberArray("Pose2D", pose2d);
+	}
+
+	private void changedJson(NetworkTableEvent event, StringSubscriber s) {
+		// TODO: add it
 	}
 
 	private void changedBotPose(NetworkTableEvent event) {
