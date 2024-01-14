@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class AprilTagSubsystem extends SubsystemBase {
 	private static AprilTagSubsystem s_subsystem;
 	private TimestampedDoubleArray botpose;
+	private NetworkTable visionTable = NetworkTableInstance.getDefault().getTable("vision");
 
 	public AprilTagSubsystem() {
 		// Singleton
@@ -38,7 +39,7 @@ public class AprilTagSubsystem extends SubsystemBase {
 					botpose = a;
 				// double[] copy = Arrays.copyOf(a.value, a.value.length);
 				// double[] copy = new double[6];
-				double[] pose2d = { a.value[0] + 8/* 6.351 */, a.value[1], a.value[5] };
+				double[] pose2d = { a.value[0] + 8.27/* 6.351 */, a.value[1] + 4.1, a.value[5] };
 				// copy[0] *= -1;
 				SmartDashboard.putNumberArray("Pose2D", pose2d);
 			});
@@ -46,6 +47,19 @@ public class AprilTagSubsystem extends SubsystemBase {
 			e.printStackTrace();
 			;
 		}
+	}
+
+	private void changedBotPose(NetworkTableEvent event) {
+		{
+			var v = event.valueData.value;
+			botpose = new TimestampedDoubleArray(v.getTime(), v.getServerTime(), v.getDoubleArray());
+			System.out.println(botpose.toString());
+			double[] pose2d = { botpose.value[0] + 8.27, botpose.value[1] + 4.1, botpose.value[5] };
+			// copy[0] *= -1;
+
+			visionTable.getDoubleArrayTopic("Pose2D").publish().set(pose2d);
+		}
+		;
 	}
 
 	public static AprilTagSubsystem get() { // returns the first instance called, guarantees that there's not

@@ -21,7 +21,7 @@ import frc.robot.subsystems.DriveSubsystem;
  * scheduler calls). Instead, the structure of the robot (including subsystems,
  * commands, and button mappings) should be declared here.
  */
-public class RobotContainer {
+public class RobotContainer implements frc.robot.util.RobotContainer {
 	private final CommandGenericHID m_controller = new CommandGenericHID(ControllerConstants.kDriverControllerPort);
 	private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 

@@ -10,7 +10,7 @@ import frc.aster.commands.drive.DefaultDriveCommand;
 
 import frc.robot.subsystems.AprilTagSubsystem;
 
-public class RobotContainer {
+public class RobotContainer implements frc.robot.util.RobotContainer {
 	private DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 	private AprilTagSubsystem m_aprilTagSubsystem = new AprilTagSubsystem();
 
