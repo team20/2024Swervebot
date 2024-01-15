@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
+import frc.aster.subsystems.PoseEstimationSubsystem;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.ControllerConstants.Axis;
 import frc.robot.commands.DefaultDriveCommand;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer implements frc.robot.util.RobotContainer {
 	private final CommandGenericHID m_controller = new CommandGenericHID(ControllerConstants.kDriverControllerPort);
 	private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+	private final PoseEstimationSubsystem m_poseEstimationSubsystem = new PoseEstimationSubsystem();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
