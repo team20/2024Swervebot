@@ -21,108 +21,110 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class AprilTagSubsystem extends SubsystemBase {
 
-    private static AprilTagSubsystem s_subsystem;
+	public static AprilTagSubsystem s_subsystem;
 
-    private TimestampedDoubleArray botpose;
+	private TimestampedDoubleArray botpose;
 
-    private TimestampedObject<Map<String, double[]>> tags;
+	private TimestampedObject<Map<String, double[]>> tags;
 
-    private NetworkTable visionTable = NetworkTableInstance.getDefault().getTable("vision");
+	protected NetworkTable visionTable = NetworkTableInstance.getDefault().getTable("vision");
 
-    public AprilTagSubsystem() {
-        if (s_subsystem != null) // singleton
-            try {
-                throw new Exception("AprilTag subsystem already initialized!");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        s_subsystem = this;
-        subscribe("limelight", "botpose", new double[6], event -> changedBotPose(event));
-        subscribe("limelight", "json", "", event -> changedJson(event));
-    }
+	public AprilTagSubsystem() {
+		if (s_subsystem != null) // singleton
+			try {
+				throw new Exception("AprilTag subsystem already initialized!");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		s_subsystem = this;
+		subscribe("limelight", "botpose", new double[6], event -> changedBotPose(event));
+		subscribe("limelight", "json", "", event -> changedJson(event));
+	}
 
-    public static AprilTagSubsystem get() { // returns the first instance called, guarantees that there's not
-        return s_subsystem;
-    }
+	public static AprilTagSubsystem get() { // returns the first instance called, guarantees that there's not
+		return s_subsystem;
+	}
 
-    public TimestampedDoubleArray botpose() {
-        return botpose;
-    }
+	public TimestampedDoubleArray botpose() {
+		return botpose;
+	}
 
-    public TimestampedObject<Map<String, double[]>> tags() {
-        return tags;
-    }
+	public TimestampedObject<Map<String, double[]>> tags() {
+		return tags;
+	}
 
-    public static void subscribe(String tableName, String topicName, String defaultValue,
-            Consumer<NetworkTableEvent> listener) {
-        NetworkTableInstance ins = NetworkTableInstance.getDefault();
-        NetworkTable table = ins.getTable(tableName);
-        var s = table.getStringTopic(topicName).subscribe(defaultValue);
-        ins.addListener(s, EnumSet.of(NetworkTableEvent.Kind.kValueAll), listener);
-    }
+	public static void subscribe(String tableName, String topicName, String defaultValue,
+			Consumer<NetworkTableEvent> listener) {
+		NetworkTableInstance ins = NetworkTableInstance.getDefault();
+		NetworkTable table = ins.getTable(tableName);
+		var s = table.getStringTopic(topicName).subscribe(defaultValue);
+		ins.addListener(s, EnumSet.of(NetworkTableEvent.Kind.kValueAll), listener);
+	}
 
-    public static void subscribe(String tableName, String topicName, double[] defaultValue,
-            Consumer<NetworkTableEvent> listener) {
-        NetworkTableInstance ins = NetworkTableInstance.getDefault();
-        NetworkTable table = ins.getTable(tableName);
-        var s = table.getDoubleArrayTopic(topicName).subscribe(defaultValue);
-        ins.addListener(s, EnumSet.of(NetworkTableEvent.Kind.kValueAll), listener);
-    }
+	public static void subscribe(String tableName, String topicName, double[] defaultValue,
+			Consumer<NetworkTableEvent> listener) {
+		NetworkTableInstance ins = NetworkTableInstance.getDefault();
+		NetworkTable table = ins.getTable(tableName);
+		var s = table.getDoubleArrayTopic(topicName).subscribe(defaultValue);
+		ins.addListener(s, EnumSet.of(NetworkTableEvent.Kind.kValueAll), listener);
+	}
 
-    /**
-     * A method run periodically (every 20 ms).
-     */
-    @Override
-    public void periodic() {
-    }
+	/**
+	 * A method run periodically (every 20 ms).
+	 */
+	@Override
+	public void periodic() {
+	}
 
-    void changedBotPose(NetworkTableEvent event) {
-        try {
-            var v = event.valueData.value;
-            botpose = new TimestampedDoubleArray(v.getTime(), v.getServerTime(), v.getDoubleArray());
-            visionTable.getEntry("Pose2D").setDoubleArray(toPose2D(botpose.value));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	TimestampedDoubleArray changedBotPose(NetworkTableEvent event) {
+		try {
+			var v = event.valueData.value;
+			botpose = new TimestampedDoubleArray(v.getTime(), v.getServerTime(), v.getDoubleArray());
+			visionTable.getEntry("Pose2D").setDoubleArray(toPose2D(botpose.value));
+			return botpose;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    void changedJson(NetworkTableEvent event) {
-        try {
-            var v = event.valueData.value;
-            var m = toMap(v.getString());
-            tags = new TimestampedObject<Map<String, double[]>>(v.getTime(), v.getServerTime(), m);
-            visionTable.getEntry("Json").setString(toString(m));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	TimestampedObject<Map<String, double[]>> changedJson(NetworkTableEvent event) {
+		try {
+			var v = event.valueData.value;
+			var m = toMap(v.getString());
+			tags = new TimestampedObject<Map<String, double[]>>(v.getTime(), v.getServerTime(), m);
+			visionTable.getEntry("Json").setString(toString(m));
+			return tags;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    static Map<String, double[]> toMap(String s) throws JsonMappingException, JsonProcessingException {
-        JsonNode n = new ObjectMapper().readTree(s);
-        n = n.path("Results");
-        n = n.path("Fiducial");
-        var m = new TreeMap<String, double[]>();
-        n.forEach(e -> {
-            var i = e.path("t6t_cs").elements();
-            double v1 = i.next().asDouble();
-            i.next();
-            double v2 = i.next().asDouble();
-            i.next();
-            double v3 = i.next().asDouble();
-            var v = new double[] { v1, v2, v3 };
-            m.put(e.path("fID").toString(), v);
-        });
-        return m;
-    }
+	static Map<String, double[]> toMap(String s) throws JsonMappingException, JsonProcessingException {
+		JsonNode n = new ObjectMapper().readTree(s);
+		n = n.path("Results").path("Fiducial");
+		var m = new TreeMap<String, double[]>();
+		n.forEach(e -> {
+			var i = e.path("t6t_cs").elements();
+			double v1 = i.next().asDouble();
+			i.next();
+			double v2 = i.next().asDouble();
+			i.next();
+			double v3 = i.next().asDouble();
+			var v = new double[] { v1, v2, v3 };
+			m.put(e.path("fID").toString(), v);
+		});
+		return m;
+	}
 
-    static double[] toPose2D(double[] botpose) {
-        return new double[] { botpose[0] + 8.27, botpose[1] + 4.1, botpose[5] };
-    }
+	static double[] toPose2D(double[] botpose) {
+		return new double[] { botpose[0] + 8.27, botpose[1] + 4.1, botpose[5] };
+	}
 
-    String toString(Map<String, double[]> m) {
-        Stream<String> stream = m.entrySet().stream().map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()));
-        return stream.reduce((e1, e2) -> e1 + e2).get();
-    }
+	String toString(Map<String, double[]> m) {
+		Stream<String> stream = m.entrySet().stream().map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()));
+		return stream.reduce((e1, e2) -> e1 + e2).get();
+	}
 
 }
-
