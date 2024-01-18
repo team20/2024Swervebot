@@ -1,8 +1,7 @@
 package hlib.drive;
 
 /**
- * A {@code Pose} represents a pose (i.e., a position with a direction) in a
- * 2-dimensional space.
+ * A {@code Pose} represents a pose (i.e., a position with a direction) in a 2-dimensional space.
  * 
  * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
  * @author Andrew Hwang (u.andrew.h@gmail.com)
@@ -18,38 +17,27 @@ public class Pose extends Position {
 	 * Constructs a {@code Pose}.
 	 * 
 	 * @param x
-	 *                         the x-coordinate value of the {@code Pose}
+	 *            the x-coordinate value of the {@code Pose}
 	 * @param y
-	 *                         the y-coordinate value of the {@code Pose}
-	 * @param directionalAngle
-	 *                         the directional angle (in radians) of the
-	 *                         {@code Pose}
+	 *            the y-coordinate value of the {@code Pose}
+	 * @param directionalAngleInRadians
+	 *            the directional angle (in radians) of the {@code Pose}
 	 */
-	public Pose(double x, double y, double directionalAngle) {
+	public Pose(double x, double y, double directionalAngleInRadians) {
 		super(x, y);
-		this.directionalAngle = normalize(directionalAngle);
+		this.directionalAngle = normalize(directionalAngleInRadians);
 	}
 
 	/**
 	 * Constructs a {@code Pose}.
 	 * 
 	 * @param p
-	 *                         the {@code Position} of the {@code Pose}
-	 * @param directionalAngle
-	 *                         the directional angle (in radians) of the
-	 *                         {@code Pose}
+	 *            the {@code Position} of the {@code Pose}
+	 * @param directionalAngleInRadians
+	 *            the directional angle (in radians) of the {@code Pose}
 	 */
-	public Pose(Position p, double directionalAngle) {
-		this(p.x, p.y, directionalAngle);
-	}
-
-	/**
-	 * Returns the directional angle (in degreees) of this {@code Pose}.
-	 * 
-	 * @return the directional angle (in degrees) of this {@code Pose}
-	 */
-	public double directionalAngleInDegrees() {
-		return directionalAngle * 180 / Math.PI;
+	public Pose(Position p, double directionalAngleInRadians) {
+		this(p.x, p.y, directionalAngleInRadians);
 	}
 
 	/**
@@ -57,8 +45,17 @@ public class Pose extends Position {
 	 * 
 	 * @return the directional angle (in radians) of this {@code Pose}
 	 */
-	public double directionalAngle() {
+	public double directionalAngleInRadians() {
 		return directionalAngle;
+	}
+
+	/**
+	 * Returns the directional angle (in degrees) of this {@code Pose}.
+	 * 
+	 * @return the directional angle (in degrees) of this {@code Pose}
+	 */
+	public double directionalAngleInDegrees() {
+		return directionalAngle * 180 / Math.PI;
 	}
 
 	/**
@@ -72,11 +69,9 @@ public class Pose extends Position {
 	}
 
 	/**
-	 * Determines whether or not the given {@code Object} is equal to this
-	 * {@code Pose}.
+	 * Determines whether or not the given {@code Object} is equal to this {@code Pose}.
 	 * 
-	 * @return {@code true} if the given {@code Object} is equal to this
-	 *         {@code Pose}; {@code false} otherwise
+	 * @return {@code true} if the given {@code Object} is equal to this {@code Pose}; {@code false} otherwise
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -91,9 +86,8 @@ public class Pose extends Position {
 	 * Adds this {@code Pose} and the specified {@code Pose}.
 	 * 
 	 * @param other
-	 *              a {@code Pose}
-	 * @return the {@code Pose} after adding this {@code Pose} and the specified
-	 *         {@code Pose}
+	 *            a {@code Pose}
+	 * @return the {@code Pose} after adding this {@code Pose} and the specified {@code Pose}
 	 */
 	public Pose add(Pose other) {
 		Position o = other.rotate(directionalAngle + other.directionalAngle);
@@ -101,14 +95,12 @@ public class Pose extends Position {
 	}
 
 	/**
-	 * Returns the {@code Pose} after moving this {@code Pose} along the direction
-	 * of this {@code Pose} by the specified
+	 * Returns the {@code Pose} after moving this {@code Pose} along the direction of this {@code Pose} by the specified
 	 * magnitude.
 	 * 
 	 * @param magnitude
-	 *                  the magnitude of movement
-	 * @return the {@code Pose} after moving this {@code Pose} along the direction
-	 *         of this {@code Pose} by the specified
+	 *            the magnitude of movement
+	 * @return the {@code Pose} after moving this {@code Pose} along the direction of this {@code Pose} by the specified
 	 *         magnitude
 	 */
 	public Pose move(double magnitude) {
@@ -117,31 +109,24 @@ public class Pose extends Position {
 	}
 
 	/**
-	 * Converts the specified angle (in radians) to the corresponding angle (in
-	 * radians) between -Math.PI (exclusive)
+	 * Converts the specified angle (in radians) to the corresponding angle (in radians) between -Math.PI (exclusive)
 	 * and Math.PI (inclusive).
 	 * 
-	 * @param angle
-	 *              an angle (in radians)
-	 * @return the corresponding angle (in radians) between -Math.PI (exclusive) and
-	 *         Math.PI (inclusive)
+	 * @param angleInRadians
+	 *            an angle (in radians)
+	 * @return the corresponding angle (in radians) between -Math.PI (exclusive) and Math.PI (inclusive)
 	 */
-	public static double normalize(double angle) {
-		if (angle <= -Math.PI) {
-			angle -= Math.floor(angle / (2 * Math.PI)) * (2 * Math.PI);
-			return angle > Math.PI ? angle - 2 * Math.PI : angle;
-		} else if (angle > Math.PI) {
-			angle -= Math.floor(angle / (2 * Math.PI)) * (2 * Math.PI);
-			return angle > Math.PI ? angle - 2 * Math.PI : angle;
-		} else
-			return angle;
+	public static double normalize(double angleInRadians) {
+		if (-Math.PI < angleInRadians && angleInRadians <= Math.PI)
+			return angleInRadians;
+		angleInRadians -= Math.floor(angleInRadians / (2 * Math.PI)) * (2 * Math.PI);
+		return angleInRadians > Math.PI ? angleInRadians - 2 * Math.PI : angleInRadians;
 	}
 
 	/**
 	 * Determines whether or not this {@code Pose} has an invalid value (e.g., NaN).
 	 * 
-	 * @return {@code true} if this {@code Pose} has an invalid value (e.g., NaN);
-	 *         {@code false} otherwise
+	 * @return {@code true} if this {@code Pose} has an invalid value (e.g., NaN); {@code false} otherwise
 	 */
 	public boolean isInvalid() {
 		return x == Double.NaN || y == Double.NaN || directionalAngle == Double.NaN;

@@ -32,7 +32,11 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 			m_poseEstimator.update(new Pose(pose[0], pose[1], pose[2] * Math.PI / 180));
 			var poseEstimated = m_poseEstimator.poseEstimated();
 			visionTable.getEntry("Pose2D'").setDoubleArray(
-					new double[] { poseEstimated.x(), poseEstimated.y(), poseEstimated.directionalAngleInDegrees() });
+					new double[] { poseEstimated.x(), poseEstimated.y(),
+							poseEstimated.directionalAngleInDegrees() });
+			// visionTable.getEntry("Pose2D'").setString(
+			// "" + poseEstimated);
+
 		}
 		return botpose;
 	}

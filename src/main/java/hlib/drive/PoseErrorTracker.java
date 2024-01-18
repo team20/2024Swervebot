@@ -32,7 +32,7 @@ public class PoseErrorTracker {
 		if (pose == null || reference == null)
 			return null;
 		return new Pose(pose.x() - reference.x(), pose.y() - reference.y(),
-				pose.directionalAngle() - reference.directionalAngle());
+				pose.directionalAngle - reference.directionalAngle);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class PoseErrorTracker {
 		if (error != null)
 			this.largestPoseError = new Pose(maxError(error.x(), largestPoseError.x()),
 					maxError(error.y(), largestPoseError.y()),
-					maxError(error.directionalAngle(), largestPoseError.directionalAngle()));
+					maxError(error.directionalAngle, largestPoseError.directionalAngle));
 	}
 
 	/**

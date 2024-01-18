@@ -157,8 +157,8 @@ public class PoseEstimator {
 	}
 
 	/**
-	 * Updates the {@code Pose} that has been updated by this {@code PoseEstimator} based on the specified
-	 * {@code Pose} from the LimeLight
+	 * Updates the {@code Pose} that has been updated by this {@code PoseEstimator} based on the specified {@code Pose}
+	 * from the LimeLight
 	 * 
 	 * @param poseDetected
 	 *            the {@code Pose} from the LimeLight

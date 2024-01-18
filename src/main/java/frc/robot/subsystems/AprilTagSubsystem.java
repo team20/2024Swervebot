@@ -123,8 +123,11 @@ public class AprilTagSubsystem extends SubsystemBase {
 	}
 
 	String toString(Map<String, double[]> m) {
-		Stream<String> stream = m.entrySet().stream().map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()));
-		return stream.reduce((e1, e2) -> e1 + e2).get();
+		if (m != null && m.size() > 0) {
+			Stream<String> stream = m.entrySet().stream().map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()));
+			return stream.reduce((e1, e2) -> e1 + e2).get();
+		}
+		return "";
 	}
 
 }

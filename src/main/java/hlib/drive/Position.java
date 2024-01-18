@@ -82,8 +82,21 @@ public class Position {
 	 * @return the angle (in radians) between the x-axis and the line from the current {@code Position} to the specified
 	 *         {@code Position}
 	 */
-	public double angleTo(Position p) {
+	public double angleInRadians(Position p) {
 		return Math.atan2(p.y - y, p.x - x);
+	}
+
+	/**
+	 * Returns the angle (in degrees) between the x-axis and the line from the current {@code Position} to the specified
+	 * {@code Position}.
+	 * 
+	 * @param p
+	 *            a {@code Position}
+	 * @return the angle (in degrees) between the x-axis and the line from the current {@code Position} to the specified
+	 *         {@code Position}
+	 */
+	public double angleInDegrees(Position p) {
+		return angleInRadians(p) * 180 / Math.PI;
 	}
 
 	/**
@@ -102,12 +115,13 @@ public class Position {
 	/**
 	 * Returns the {@code Position} after rotating this {@code Position} about the origin by the specified angle.
 	 * 
-	 * @param angle
-	 *            an angle
+	 * @param angleInRadians
+	 *            an angle (in radians)
 	 * @return the {@code Position} after rotating this {@code Position} about the origin by the specified angle
 	 */
-	public Position rotate(double angle) {
-		return new Position(Math.cos(angle) * x - Math.sin(angle) * y, Math.sin(angle) * x + Math.cos(angle) * y);
+	public Position rotate(double angleInRadians) {
+		return new Position(Math.cos(angleInRadians) * x - Math.sin(angleInRadians) * y,
+				Math.sin(angleInRadians) * x + Math.cos(angleInRadians) * y);
 	}
 
 	/**

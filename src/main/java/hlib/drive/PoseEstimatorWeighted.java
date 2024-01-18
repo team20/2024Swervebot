@@ -65,8 +65,8 @@ public class PoseEstimatorWeighted extends PoseEstimatorInconsistencyTolerant {
 			return p2;
 		if (p2 == null)
 			return p1;
-		double a1 = p1.directionalAngle();
-		double a2 = p2.directionalAngle();
+		double a1 = p1.directionalAngle;
+		double a2 = p2.directionalAngle;
 		if (a1 > a2 + Math.PI)
 			a2 += 2 * Math.PI;
 		else if (a2 > a1 + Math.PI)

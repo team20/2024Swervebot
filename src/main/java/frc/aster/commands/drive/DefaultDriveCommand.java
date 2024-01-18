@@ -3,12 +3,12 @@ package frc.aster.commands.drive;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.aster.Constants.ControllerConstants;
 import frc.aster.Constants.DriveConstants;
 import frc.aster.subsystems.DriveSubsystem;
 
-public class DefaultDriveCommand extends CommandBase {
+public class DefaultDriveCommand extends Command {
 	private final Supplier<Double> m_speedStraight, m_speedLeft, m_speedRight;
 
 	/**
