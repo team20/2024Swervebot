@@ -41,4 +41,8 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 		return botpose;
 	}
 
+	public Pose poseEstimated() {
+		return m_poseEstimator.poseEstimated();
+	}
+
 }

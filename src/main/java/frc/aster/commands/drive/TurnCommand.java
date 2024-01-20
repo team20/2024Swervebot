@@ -58,7 +58,7 @@ public class TurnCommand extends Command {
 	 */
 	public TurnCommand(Supplier<Double> targetAngleCalculator) {
 		m_targetAngleCalculator = targetAngleCalculator;
-		m_turnController = new PIDController(DriveConstants.kTurnP, DriveConstants.kTurnI, DriveConstants.kTurnD);
+		m_turnController = new PIDController(DriveConstants.kTurnP / 2, DriveConstants.kTurnI, DriveConstants.kTurnD);
 		m_turnController.setTolerance(DriveConstants.kTurnTolerance);
 		m_turnController.enableContinuousInput(-180, 180);
 		addRequirements(DriveSubsystem.get());
@@ -78,7 +78,8 @@ public class TurnCommand extends Command {
 		} catch (Exception e) {
 		}
 		m_turnController.setSetpoint(setPoint);
-		SmartDashboard.putString("turn:initialize", String.format("set point: %.1f", setPoint));
+		SmartDashboard.putString("turn:initialize",
+				String.format("heading: %.1f, set point: %.1f", DriveSubsystem.get().getHeading(), setPoint));
 	}
 
 	/**
