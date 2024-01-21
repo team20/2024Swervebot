@@ -9,17 +9,14 @@ package hlib.drive;
 public class PoseEstimator {
 
 	/**
-	 * The distance threshold for outlier detection (i.e., difference in x- or
-	 * y-coordinates of the {@code Pose} from
-	 * LimeLight compared to the {@code Pose} that has been estimated in order for
-	 * the {@code Pose} from LimeLight to be
+	 * The distance threshold for outlier detection (i.e., difference in x- or y-coordinates of the {@code Pose} from
+	 * LimeLight compared to the {@code Pose} that has been estimated in order for the {@code Pose} from LimeLight to be
 	 * considered an outlier).
 	 */
 	double distanceThreshold;
 
 	/**
-	 * The {@code Pose} of the {@code Robot} that has been estimated by this
-	 * {@code PoseEstimator}.
+	 * The {@code Pose} of the {@code Robot} that has been estimated by this {@code PoseEstimator}.
 	 */
 	Pose poseEstimated = null;
 
@@ -39,8 +36,7 @@ public class PoseEstimator {
 	int poseDetectionFailures = 0;
 
 	/**
-	 * The number of {@code Pose} outliers that have been detected by this
-	 * {@code PoseEstimator}.
+	 * The number of {@code Pose} outliers that have been detected by this {@code PoseEstimator}.
 	 */
 	int outliers = 0;
 
@@ -53,24 +49,18 @@ public class PoseEstimator {
 	 * Constructs a {@code PoseEstimator}.
 	 * 
 	 * @param distanceThreshold
-	 *                          the distance threshold for outlier detection (i.e.,
-	 *                          the difference in x- or y-coordinates of the
-	 *                          {@code Pose} from LimeLight compared to the
-	 *                          {@code Pose} that has been estimated in order for
-	 *                          the
-	 *                          {@code Pose} from LimeLight to be considered an
-	 *                          outlier)
+	 *            the distance threshold for outlier detection (i.e., the difference in x- or y-coordinates of the
+	 *            {@code Pose} from LimeLight compared to the {@code Pose} that has been estimated in order for the
+	 *            {@code Pose} from LimeLight to be considered an outlier)
 	 */
 	public PoseEstimator(double distanceThreshold) {
 		this.distanceThreshold = distanceThreshold;
 	}
 
 	/**
-	 * Returns the {@code Pose} of a {@code Robot} estimated by this
-	 * {@code PoseEstimator}.
+	 * Returns the {@code Pose} of a {@code Robot} estimated by this {@code PoseEstimator}.
 	 * 
-	 * @return the {@code Pose} of a {@code Robot} estimated by this
-	 *         {@code PoseEstimator}
+	 * @return the {@code Pose} of a {@code Robot} estimated by this {@code PoseEstimator}
 	 */
 	public Pose poseEstimated() {
 		return poseEstimated;
@@ -80,13 +70,10 @@ public class PoseEstimator {
 	 * Updates this {@code PoseEstimator} based on the specified {@code Pose}.
 	 * 
 	 * @param poseDetected
-	 *                     the {@code Pose} from the LimeLight
-	 * @return {@code false} if the specified {@code Pose} seems like an outlier
-	 *         (because either the x- or the
-	 *         y-coordinate value of the {@code Pose} is different by more than the
-	 *         threshold compared to the
-	 *         {@code Pose} that has been estimated) and thus rejected; {@code true}
-	 *         if this {@code RobotPoseEstimator}
+	 *            the {@code Pose} from the LimeLight
+	 * @return {@code false} if the specified {@code Pose} seems like an outlier (because either the x- or the
+	 *         y-coordinate value of the {@code Pose} is different by more than the threshold compared to the
+	 *         {@code Pose} that has been estimated) and thus rejected; {@code true} if this {@code RobotPoseEstimator}
 	 *         is updated based on the specified {@code Pose}
 	 */
 	public final synchronized boolean update(Pose poseDetected) {
@@ -101,11 +88,9 @@ public class PoseEstimator {
 	}
 
 	/**
-	 * Returns the rate (the number of poses per second) at which the {@code Pose}
-	 * of the robot has been detected.
+	 * Returns the rate (the number of poses per second) at which the {@code Pose} of the robot has been detected.
 	 * 
-	 * @return the rate (the number of poses per second) at which the {@code Pose}
-	 *         of the robot has been detected
+	 * @return the rate (the number of poses per second) at which the {@code Pose} of the robot has been detected
 	 */
 	public double poseDetectionRate() {
 		double time = 0.001 * (System.currentTimeMillis() - startTime);
@@ -116,12 +101,10 @@ public class PoseEstimator {
 	}
 
 	/**
-	 * Returns the rate (the number of failures per second) at which the
-	 * {@code Pose} of the robot has not been
+	 * Returns the rate (the number of failures per second) at which the {@code Pose} of the robot has not been
 	 * detected.
 	 * 
-	 * @return the rate (the number of failures per second) at which the
-	 *         {@code Pose} of the robot has not been detected
+	 * @return the rate (the number of failures per second) at which the {@code Pose} of the robot has not been detected
 	 */
 	public double poseDetectionFailureRate() {
 		double time = 0.001 * (System.currentTimeMillis() - startTime);
@@ -132,26 +115,20 @@ public class PoseEstimator {
 	}
 
 	/**
-	 * Returns the number of {@code Pose} outliers that have been detected by this
-	 * {@code PoseEstimator}.
+	 * Returns the number of {@code Pose} outliers that have been detected by this {@code PoseEstimator}.
 	 * 
-	 * @return the number of {@code Pose} outliers that have been detected by this
-	 *         {@code PoseEstimator}
+	 * @return the number of {@code Pose} outliers that have been detected by this {@code PoseEstimator}
 	 */
 	public int outliers() {
 		return outliers;
 	}
 
 	/**
-	 * Returns the largest differences (in x- and y-coordinate values as well as
-	 * directional angle values) between the
-	 * {@code Pose} estimated by this {@code RobotPoseEstimator} and the
-	 * {@code Pose}s from the LimeLight.
+	 * Returns the largest differences (in x- and y-coordinate values as well as directional angle values) between the
+	 * {@code Pose} estimated by this {@code RobotPoseEstimator} and the {@code Pose}s from the LimeLight.
 	 * 
-	 * @return the largest differences (in x- and y-coordinate values as well as
-	 *         directional angle values) between the
-	 *         {@code Pose} estimated by this {@code RobotPoseEstimator} and the
-	 *         {@code Pose}s from the LimeLight
+	 * @return the largest differences (in x- and y-coordinate values as well as directional angle values) between the
+	 *         {@code Pose} estimated by this {@code RobotPoseEstimator} and the {@code Pose}s from the LimeLight
 	 */
 	public Pose largestPoseInconsistency() {
 		return errorTracker.largestPoseError();
@@ -161,11 +138,9 @@ public class PoseEstimator {
 	 * Determines whether or not the specified {@code Pose} is an outlier.
 	 * 
 	 * @param poseDetected
-	 *                     the {@code Pose} from the LimeLight
-	 * @return {@code true} if either the x- or the y-coordinate value of the
-	 *         {@code Pose} is different by more than the
-	 *         threshold compared to the {@code Pose} that has been estimated;
-	 *         {@code false} otherwise (i.e., the
+	 *            the {@code Pose} from the LimeLight
+	 * @return {@code true} if either the x- or the y-coordinate value of the {@code Pose} is different by more than the
+	 *         threshold compared to the {@code Pose} that has been estimated; {@code false} otherwise (i.e., the
 	 *         specified {@code Pose} is not an outlier)
 	 */
 	protected boolean isOutlier(Pose poseDetected) {
@@ -182,12 +157,11 @@ public class PoseEstimator {
 	}
 
 	/**
-	 * Updates the {@code Pose} that has been updated by this {@code PoseEstimator}
-	 * based on the specified {@code Pose}
+	 * Updates the {@code Pose} that has been updated by this {@code PoseEstimator} based on the specified {@code Pose}
 	 * from the LimeLight
 	 * 
 	 * @param poseDetected
-	 *                     the {@code Pose} from the LimeLight
+	 *            the {@code Pose} from the LimeLight
 	 */
 	protected void setPoseEstimated(Pose poseDetected) {
 		if (poseDetected != null) {
@@ -197,11 +171,9 @@ public class PoseEstimator {
 	}
 
 	/**
-	 * Returns the number of detected {@code Pose}s that have been given to this
-	 * {@code PoseEstimator}.
+	 * Returns the number of detected {@code Pose}s that have been given to this {@code PoseEstimator}.
 	 * 
-	 * @return the number of detected {@code Pose}s that have been given to this
-	 *         {@code PoseEstimator}
+	 * @return the number of detected {@code Pose}s that have been given to this {@code PoseEstimator}
 	 */
 	public int posesDetected() {
 		return this.posesDetected;
