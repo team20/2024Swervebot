@@ -28,15 +28,12 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 	TimestampedDoubleArray changedBotPose(NetworkTableEvent event) {
 		var botpose = super.changedBotPose(event);
 		if (botpose != null) {
-			double[] pose = toPose2D(botpose.value);
-			m_poseEstimator.update(new Pose(pose[0], pose[1], pose[2] * Math.PI / 180));
+			m_poseEstimator.update(new Pose(botpose.value[0], botpose.value[1], botpose.value[5] * Math.PI / 180));
 			var poseEstimated = m_poseEstimator.poseEstimated();
-			visionTable.getEntry("Pose2D'").setDoubleArray(
-					new double[] { poseEstimated.x(), poseEstimated.y(),
-							poseEstimated.directionalAngleInDegrees() });
-			// visionTable.getEntry("Pose2D'").setString(
-			// "" + poseEstimated);
-
+			visionTable.getEntry("Pose Estimated").setString("" + poseEstimated());
+			if (poseEstimated != null)
+				visionTable.getEntry("Pose2D'").setDoubleArray(toPose2DAdvantageScope(poseEstimated.x(),
+						poseEstimated.y(), poseEstimated.directionalAngleInDegrees()));
 		}
 		return botpose;
 	}
@@ -44,5 +41,4 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 	public Pose poseEstimated() {
 		return m_poseEstimator.poseEstimated();
 	}
-
 }

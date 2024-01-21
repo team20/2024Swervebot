@@ -24,9 +24,10 @@ public class DriveDistanceCommand extends Command {
 
 	/**
 	 * The
-	 * {@code Supplier<Double>) that calculates the target distance in meters that the robot should move (executed
-	 * when the {@code DriveDistanceCommand} is submitted to the scheduler and
-	 * initialized for execution).
+	 * {@code Supplier<Double>) that calculates the target distance in meters that the robot should move.
+	 * This is used at the commencement of this {@code DriveDistanceCommand} (i.e.,
+	 * when the scheduler begins to periodically excute this {@code
+	 * DriveDistanceCommand}).
 	 */
 	private Supplier<Double> m_targetDistanceCalculator;
 
@@ -65,7 +66,7 @@ public class DriveDistanceCommand extends Command {
 	 *                          the target distance in meters that the robot should
 	 *                          move
 	 * @param distanceTolerance
-	 *                          the distance error which is tolerable
+	 *                          the distance error in meters which is tolerable
 	 */
 	public DriveDistanceCommand(double targetDistance, double distanceTolerance) {
 		this(() -> targetDistance, distanceTolerance);
@@ -79,16 +80,16 @@ public class DriveDistanceCommand extends Command {
 	 *                                 a {@code Supplier<Double>} that calculates
 	 *                                 the target distance in meters that the robot
 	 *                                 should
-	 *                                 move (executed when the
-	 *                                 {@code DriveDistanceCommand} is submitted to
-	 *                                 the
-	 *                                 scheduler and initialized for execution)
+	 *                                 move (used when the scheduler begins to
+	 *                                 periodically execute this
+	 *                                 {@code DriveDistanceCommand})
 	 * 
-	 * @param distanceTolerance        the distance error which is tolerable
+	 * @param distanceTolerance        the distance error in meters which is
+	 *                                 tolerable
 	 */
 	public DriveDistanceCommand(Supplier<Double> targetDistanceCalculator, double distanceTolerance) {
 		m_targetDistanceCalculator = targetDistanceCalculator;
-		double kP = .3, kI = 0.0, kD = 0.0;
+		double kP = .5, kI = 0.0, kD = 0.0;
 		var constraints = new TrapezoidProfile.Constraints(3, 2);
 		m_leftController = new ProfiledPIDController(kP, kI, kD, constraints);
 		m_rightController = new ProfiledPIDController(kP, kI, kD, constraints);
@@ -98,8 +99,9 @@ public class DriveDistanceCommand extends Command {
 	}
 
 	/**
-	 * Is invoked whenever this {@code DriveDistanceCommand} is initially scheduled
-	 * for execution.
+	 * Is invoked at the commencement of this {@code DriveDistanceCommand} (i.e,
+	 * when the
+	 * scheduler begins to periodically execute this {@code DriveDistanceCommand}).
 	 */
 	@Override
 	public void initialize() {
@@ -111,14 +113,17 @@ public class DriveDistanceCommand extends Command {
 			m_targetDistance = 0;
 		}
 		SmartDashboard.putString(
-				"drive:initialize",
-				String.format("left encoder position: %.1f, right encoder position: %.1f, target distance: %.1f",
+				"drive",
+				String.format(
+						"distance: initialize - left encoder position: %.1f, right encoder position: %.1f, target distance: %.1f",
 						m_startLeftEncoderPosition,
 						m_startRightEncoderPosition, m_targetDistance));
 	}
 
 	/**
-	 * Is invoked periodically while this {@code DriveDistanceCommand} is scheduled.
+	 * Is invoked periodically by the scheduler while it is in charge of executing
+	 * this
+	 * {@code DriveDistanceCommand}.
 	 */
 	@Override
 	public void execute() {
@@ -130,9 +135,9 @@ public class DriveDistanceCommand extends Command {
 				m_targetDistance);
 		DriveSubsystem.get().tankDrive(leftSpeed, rightSpeed);
 		SmartDashboard.putString(
-				"drive:execute",
+				"drive",
 				String.format(
-						"left encoder position: %.1f, right encoder position: %.1f, left speed: %.1f, right speed: %.1f",
+						"distance: execute - left encoder position: %.1f, right encoder position: %.1f, left speed: %.1f, right speed: %.1f",
 						leftEncoderPosition, rightEncoderPosition,
 						leftSpeed, rightSpeed));
 	}
@@ -147,6 +152,8 @@ public class DriveDistanceCommand extends Command {
 	@Override
 	public void end(boolean interrupted) {
 		DriveSubsystem.get().tankDrive(0, 0);
+		SmartDashboard.putString("drive", "distance: end - " + interrupted);
+
 	}
 
 	/**
@@ -157,6 +164,11 @@ public class DriveDistanceCommand extends Command {
 	 */
 	@Override
 	public boolean isFinished() {
-		return m_leftController.atSetpoint() && m_rightController.atSetpoint();
+		return Math.abs(
+				DriveSubsystem.get().getLeftEncoderPosition() - m_startLeftEncoderPosition - m_targetDistance) < .1
+				&& Math.abs(DriveSubsystem.get().getRightEncoderPosition() - m_startRightEncoderPosition
+						- m_targetDistance) < .1;// m_leftController.atSetpoint()
+		// &&
+		// m_rightController.atSetpoint();
 	}
 }

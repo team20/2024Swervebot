@@ -9,10 +9,9 @@ import frc.aster.Constants.DriveConstants;
 import frc.aster.subsystems.DriveSubsystem;
 
 /**
- * The {@code TurnCommand} rotates the robot counter-clockwise to a specific
- * angle relative to its current heading. It
- * utilizes a {@code PIDController} to maintain precision in reaching the target
- * angle.
+ * The {@code TurnCommand} rotates the robot by a specific angle in the
+ * counter-clockwise direction. It utilizes a {@code PIDController} to maintain
+ * precision in the rotational movement.
  * 
  * @author Andrew Hwang (u.andrew.h@gmail.com)
  * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
@@ -20,16 +19,15 @@ import frc.aster.subsystems.DriveSubsystem;
 public class TurnCommand extends Command {
 
 	/**
-	 * {@code Supplier<Double>} that calculates the target angle in degrees by which
-	 * the robot should rotate
-	 * counter-clockwise (executed when the {@code TurnCommand} is submitted to the
-	 * scheduler and initialized for
-	 * execution)
+	 * The {@code Supplier<Double>} that calculates the target angle in degrees by
+	 * which the robot should rotate. This {@code Supplier<Double>} is used at
+	 * the commencement of this {@code TurnCommand} (i.e., when the scheduler begins
+	 * to periodically execute this {@code TurnCommand}).
 	 */
 	private Supplier<Double> m_targetAngleCalculator;
 
 	/**
-	 * The {@code PIDController} for controlling the rotation.
+	 * The {@code PIDController} for controlling the rotational movement.
 	 */
 	private PIDController m_turnController;
 
@@ -37,11 +35,13 @@ public class TurnCommand extends Command {
 	 * Constructs a {@code TurnCommand}.
 	 * 
 	 * @param targetAngle
-	 *                    the target angle in degrees by which the robot should
-	 *                    rotate counter-clockwise
+	 *                       the target angle in degrees by which the robot should
+	 *                       rotate in the counter-clockwise direction
+	 * @param angleTolerance
+	 *                       the angle error in degrees which is tolerable
 	 */
-	public TurnCommand(double targetAngle) {
-		this(() -> targetAngle);
+	public TurnCommand(double targetAngle, double angleTolerance) {
+		this(() -> targetAngle, angleTolerance);
 	}
 
 	/**
@@ -50,23 +50,24 @@ public class TurnCommand extends Command {
 	 * @param targetAngleCalculator
 	 *                              a {@code Supplier<Double>} that calculates the
 	 *                              target angle in degrees by which the robot
-	 *                              should
-	 *                              rotate counter-clockwise (executed when the
-	 *                              {@code TurnCommand} is submitted to the
-	 *                              scheduler and
-	 *                              initialized for execution)
+	 *                              should rotate in the counter-clockwise direction
+	 *                              (used when the scheduler begins
+	 *                              to periodically execute this
+	 *                              {@code TurnCommand})
+	 * @param angleTolerance
+	 *                              the angle error in degrees which is tolerable
 	 */
-	public TurnCommand(Supplier<Double> targetAngleCalculator) {
+	public TurnCommand(Supplier<Double> targetAngleCalculator, double angleTolerance) {
 		m_targetAngleCalculator = targetAngleCalculator;
-		m_turnController = new PIDController(DriveConstants.kTurnP / 2, DriveConstants.kTurnI, DriveConstants.kTurnD);
-		m_turnController.setTolerance(DriveConstants.kTurnTolerance);
+		m_turnController = new PIDController(DriveConstants.kTurnP / 4, DriveConstants.kTurnI, DriveConstants.kTurnD);
+		m_turnController.setTolerance(angleTolerance);
 		m_turnController.enableContinuousInput(-180, 180);
 		addRequirements(DriveSubsystem.get());
 	}
 
 	/**
-	 * Is invoked whenever this {@code TurnCommand} is initially scheduled for
-	 * execution.
+	 * Is invoked at the commencement of this {@code TurnCommand} (i.e, when the
+	 * scheduler begins to periodically execute this {@code TurnCommand}).
 	 */
 	@Override
 	public void initialize() {
@@ -78,21 +79,25 @@ public class TurnCommand extends Command {
 		} catch (Exception e) {
 		}
 		m_turnController.setSetpoint(setPoint);
-		SmartDashboard.putString("turn:initialize",
-				String.format("heading: %.1f, set point: %.1f", DriveSubsystem.get().getHeading(), setPoint));
+		SmartDashboard.putString("drive",
+				String.format("turn: initialize - heading: %.1f, set point: %.1f", DriveSubsystem.get().getHeading(),
+						setPoint));
 	}
 
 	/**
-	 * Is invoked periodically while this {@code TurnCommand} is scheduled.
+	 * Is invoked periodically by the scheduler while it is in charge of executing
+	 * this
+	 * {@code TurnCommand}.
 	 */
 	@Override
 	public void execute() {
 		double heading = DriveSubsystem.get().getHeading();
 		double turnSpeed = m_turnController.calculate(heading);
 		// force the turn speed to be either <= -0.15 or >= 0.15
-		turnSpeed = Math.abs(turnSpeed) < 0.15 ? Math.signum(turnSpeed) * 0.15 : turnSpeed;
+		turnSpeed = Math.abs(turnSpeed) < 0.05 ? Math.signum(turnSpeed) * 0.05 : turnSpeed;
 		DriveSubsystem.get().tankDrive(-turnSpeed, turnSpeed);
-		SmartDashboard.putString("turn:execute", String.format("heading: %.1f, turn speed: %.1f", heading, turnSpeed));
+		SmartDashboard.putString("drive",
+				String.format("turn: execute - heading: %.1f, turn speed: %.1f", heading, turnSpeed));
 	}
 
 	/**
@@ -104,6 +109,8 @@ public class TurnCommand extends Command {
 	@Override
 	public void end(boolean interrupted) {
 		DriveSubsystem.get().tankDrive(0, 0);
+		SmartDashboard.putString("drive", "turn: TurnCommand ended" + interrupted);
+
 	}
 
 	/**
