@@ -36,19 +36,15 @@ public class RobotContainer implements frc.robot.util.RobotContainer {
 		// .whileTrue(new TurnCommand(30));
 		var target = new Position(6.809, -3.859);
 		Supplier<Double> turnSupplier = () -> {
-			Pose pose = m_poseEstimationSubsystem.poseEstimated();
-			if (pose != null) {
-				System.out.println(pose.angleInDegrees(target) + ", " + pose.yawInDegrees());
+			Pose pose = m_poseEstimationSubsystem.estimatedPose();
+			if (pose != null)
 				return pose.angleInDegrees(target) - pose.yawInDegrees();
-			}
 			return null;
 		};
 		Supplier<Double> driveSupplier = () -> {
-			Pose pose = m_poseEstimationSubsystem.poseEstimated();
-			if (pose != null) {
-				System.out.println(pose.distance(target) + "from 1 meter away");
+			Pose pose = m_poseEstimationSubsystem.estimatedPose();
+			if (pose != null)
 				return 1 - pose.distance(target);
-			}
 			return null;
 		};
 		new JoystickButton(m_operatorController, ControllerConstants.Button.kTriangle)

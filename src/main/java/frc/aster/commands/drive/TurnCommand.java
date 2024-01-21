@@ -59,7 +59,7 @@ public class TurnCommand extends Command {
 	 */
 	public TurnCommand(Supplier<Double> targetAngleCalculator, double angleTolerance) {
 		m_targetAngleCalculator = targetAngleCalculator;
-		m_turnController = new PIDController(DriveConstants.kTurnP / 4, DriveConstants.kTurnI, DriveConstants.kTurnD);
+		m_turnController = new PIDController(DriveConstants.kTurnP / 3, DriveConstants.kTurnI, DriveConstants.kTurnD);
 		m_turnController.setTolerance(angleTolerance);
 		m_turnController.enableContinuousInput(-180, 180);
 		addRequirements(DriveSubsystem.get());
@@ -86,15 +86,15 @@ public class TurnCommand extends Command {
 
 	/**
 	 * Is invoked periodically by the scheduler while it is in charge of executing
-	 * this
-	 * {@code TurnCommand}.
+	 * this {@code TurnCommand}.
 	 */
 	@Override
 	public void execute() {
 		double heading = DriveSubsystem.get().getHeading();
 		double turnSpeed = m_turnController.calculate(heading);
-		// force the turn speed to be either <= -0.15 or >= 0.15
-		turnSpeed = Math.abs(turnSpeed) < 0.05 ? Math.signum(turnSpeed) * 0.05 : turnSpeed;
+		turnSpeed = Math.abs(turnSpeed) < DriveConstants.kTurnMinSpeed
+				? Math.signum(turnSpeed) * DriveConstants.kTurnMinSpeed
+				: turnSpeed;
 		DriveSubsystem.get().tankDrive(-turnSpeed, turnSpeed);
 		SmartDashboard.putString("drive",
 				String.format("turn: execute - heading: %.1f, turn speed: %.1f", heading, turnSpeed));
