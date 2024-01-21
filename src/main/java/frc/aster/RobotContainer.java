@@ -39,16 +39,16 @@ public class RobotContainer implements frc.robot.util.RobotContainer {
 			Pose pose = m_poseEstimationSubsystem.estimatedPose();
 			if (pose != null)
 				return pose.angleInDegrees(target) - pose.yawInDegrees();
-			return null;
+			return 0.0;
 		};
 		Supplier<Double> driveSupplier = () -> {
 			Pose pose = m_poseEstimationSubsystem.estimatedPose();
 			if (pose != null)
 				return 1 - pose.distance(target);
-			return null;
+			return 0.0;
 		};
 		new JoystickButton(m_operatorController, ControllerConstants.Button.kTriangle)
-				.onTrue(new TurnCommand(turnSupplier, 2)
+				.whileTrue(new TurnCommand(turnSupplier, 2)
 						.andThen(new DriveDistanceCommand(driveSupplier, 0.1)));
 	}
 
