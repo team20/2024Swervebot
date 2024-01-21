@@ -1,7 +1,8 @@
 package hlib.drive;
 
 /**
- * A {@code PoseEstimatorWeighted} can estimate the {@code Pose} of a {@code Robot}.
+ * A {@code PoseEstimatorWeighted} estimates the pose of an object by applying a certain weight to each sample
+ * {@code Pose}.
  * 
  * @author Andrew Hwang (u.andrew.h@gmail.com)
  * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
@@ -9,21 +10,20 @@ package hlib.drive;
 public class PoseEstimatorWeighted extends PoseEstimatorInconsistencyTolerant {
 
 	/**
-	 * The weight applied to each {@code Pose} detected by the LimeLight.
+	 * The weight applied to each sample {@code Pose}.
 	 */
-	double weight;
+	protected double weight;
 
 	/**
 	 * Constructs a {@code PoseEstimatorWeighted}.
 	 * 
 	 * @param distanceThreshold
-	 *            the distance threshold for outlier detection (i.e., the difference in x- or y-coordinates of the
-	 *            {@code Pose} from LimeLight compared to the {@code Pose} that has been estimated in order for the
-	 *            {@code Pose} from LimeLight to be considered an outlier)
+	 *            the distance threshold for outlier detection (a sample {@code Pose} is considered an outlier and
+	 *            rejected if its distance from the estimated {@code Pose} is larger than this threshold)
 	 * @param rejectionLimit
-	 *            the number of rejections before resetting the {@code PoseEstimatorWeighted}
+	 *            the number of rejections needed to reset the {@code PoseEstimatorWeighted}
 	 * @param weight
-	 *            the weight of each new {@code Pose} from the LimeLight.
+	 *            the weight of each sample {@code Pose}
 	 */
 	public PoseEstimatorWeighted(double distanceThreshold, int rejectionLimit, double weight) {
 		super(distanceThreshold, rejectionLimit);
@@ -31,18 +31,17 @@ public class PoseEstimatorWeighted extends PoseEstimatorInconsistencyTolerant {
 	}
 
 	/**
-	 * Updates the {@code Pose} that has been updated by this {@code PoseEstimatorWeighted} based on the specified
-	 * {@code Pose} from the LimeLight.
+	 * Updates the estimated {@code Pose} based on the specified sample {@code Pose}.
 	 * 
-	 * @param poseDetected
-	 *            the {@code Pose} from the LimeLight
+	 * @param sample
+	 *            a sample {@code Pose}
 	 */
 	@Override
-	public void setPoseEstimated(Pose poseDetected) {
-		if (poseDetected != null) {
-			errorTracker.update(poseDetected, this.poseEstimated);
-			this.poseEstimated = weightedSum(poseDetected, weight, this.poseEstimated, 1 - weight);
-			if (this.poseEstimated.isInvalid())
+	public void estimatedPose(Pose sample) {
+		if (sample != null) {
+			errorTracker.update(sample, this.estimatedPose);
+			this.estimatedPose = weightedSum(sample, weight, this.estimatedPose, 1 - weight);
+			if (this.estimatedPose.hasNaN())
 				reset();
 		}
 	}
@@ -65,8 +64,8 @@ public class PoseEstimatorWeighted extends PoseEstimatorInconsistencyTolerant {
 			return p2;
 		if (p2 == null)
 			return p1;
-		double a1 = p1.directionalAngle;
-		double a2 = p2.directionalAngle;
+		double a1 = p1.yaw;
+		double a2 = p2.yaw;
 		if (a1 > a2 + Math.PI)
 			a2 += 2 * Math.PI;
 		else if (a2 > a1 + Math.PI)

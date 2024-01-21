@@ -1,7 +1,8 @@
 package hlib.drive;
 
 /**
- * A {@code PoseEstimatorInconsistencyTolerant} can estimate the {@code Pose} of a {@code Robot}.
+ * A {@code PoseEstimatorInconsistencyTolerant} estimates the pose of an object. It resets itself if it consecutively
+ * rejects a certain number of samples {@code Pose}s as outliers.
  * 
  * @author Andrew Hwang (u.andrew.h@gmail.com)
  * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
@@ -9,12 +10,13 @@ package hlib.drive;
 public class PoseEstimatorInconsistencyTolerant extends PoseEstimator {
 
 	/**
-	 * The number of rejections before resetting this {@code PoseEstimatorInconsistencyTolerant}.
+	 * The number of consecutive rejections of sample {@code Pose}s needed to reset this
+	 * {@code PoseEstimatorInconsistencyTolerant}.
 	 */
-	int relectionLimit;
+	int rejectionLimit;
 
 	/**
-	 * The number of rejections of the {@code Pose}s from the LimeLight.
+	 * The number of consecutive sample {@code Pose}s that have been rejected as outliers.
 	 */
 	int rejections = 0;
 
@@ -22,34 +24,33 @@ public class PoseEstimatorInconsistencyTolerant extends PoseEstimator {
 	 * Constructs a {@code PoseEstimatorInconsistencyTolerant}.
 	 * 
 	 * @param distanceThreshold
-	 *            the distance threshold for outlier detection (i.e., the difference in x- or y-coordinates of the
-	 *            {@code Pose} from LimeLight compared to the {@code Pose} that has been estimated in order for the
-	 *            {@code Pose} from LimeLight to be considered an outlier)
+	 *            the distance threshold for outlier detection (a sample {@code Pose} is considered an outlier and
+	 *            rejected if its distance from the estimated {@code Pose} is larger than this threshold)
 	 * @param rejectionLimit
-	 *            the number of rejections before resetting the {@code RobotPoseEstimatorInconsistencyTolerant}
+	 *            the number of rejections needed to reset the {@code PoseEstimatorInconsistencyTolerant}
 	 */
 
 	public PoseEstimatorInconsistencyTolerant(double distanceThreshold, int rejectionLimit) {
 		super(distanceThreshold);
-		this.relectionLimit = rejectionLimit;
+		this.rejectionLimit = rejectionLimit;
 	}
 
 	/**
-	 * Determines whether or not the specified {@code Pose} is an outlier.
+	 * Determines whether or not the specified sample {@code Pose} is an outlier.
 	 * 
-	 * @param poseDetected
-	 *            the {@code Pose} from the LimeLight
-	 * @return {@code true} if either the x- or the y-coordinate value of the {@code Pose} is different by more than the
-	 *         threshold compared to the {@code Pose} that has been estimated; {@code false} otherwise (i.e., the
-	 *         specified {@code Pose} is not an outlier)
+	 * @param sample
+	 *            a sample {@code Pose}
+	 * @return {@code true} if either the x- or y-coordinate value of the sample {@code Pose} is different by more than
+	 *         the threshold compared to the estimated {@code Pose} maintained by the
+	 *         {@code PoseEstimatorInconsistencyTolerant}; {@code false} otherwise
 	 */
-	protected boolean isOutlier(Pose poseDetected) {
-		if (super.isOutlier(poseDetected)) {
-			if (++rejections > relectionLimit)
+	protected boolean isOutlier(Pose sample) {
+		if (super.isOutlier(sample)) {
+			if (++rejections > rejectionLimit)
 				reset();
 			return true;
 		}
-		if (poseDetected != null && this.poseEstimated != null)
+		if (sample != null && this.estimatedPose != null)
 			rejections = 0;
 		return false;
 	}
@@ -59,7 +60,7 @@ public class PoseEstimatorInconsistencyTolerant extends PoseEstimator {
 	 */
 	protected void reset() {
 		System.out.println("resetting the pose estimator...");
-		poseEstimated = null;
+		estimatedPose = null;
 		rejections = 0;
 	}
 

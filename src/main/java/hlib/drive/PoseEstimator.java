@@ -1,7 +1,7 @@
 package hlib.drive;
 
 /**
- * A {@code PoseEstimator} can estimate the {@code Pose} of a {@code Robot}.
+ * A {@code PoseEstimator} estimates the pose of an object based on sample {@code Pose}s.
  * 
  * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
  * @author Andrew Hwang (u.andrew.h@gmail.com)
@@ -9,16 +9,15 @@ package hlib.drive;
 public class PoseEstimator {
 
 	/**
-	 * The distance threshold for outlier detection (i.e., difference in x- or y-coordinates of the {@code Pose} from
-	 * LimeLight compared to the {@code Pose} that has been estimated in order for the {@code Pose} from LimeLight to be
-	 * considered an outlier).
+	 * The distance threshold for outlier detection (a sample {@code Pose} is considered an outlier and rejected if its
+	 * distance from the estimated {@code Pose} is larger than this threshold).
 	 */
 	double distanceThreshold;
 
 	/**
-	 * The {@code Pose} of the {@code Robot} that has been estimated by this {@code PoseEstimator}.
+	 * The {@code Pose} representing the pose estimated by this {@code PoseEstimator}.
 	 */
-	Pose poseEstimated = null;
+	Pose estimatedPose = null;
 
 	/**
 	 * The {@code PoseErrorTracker} used by this {@code PoseEstimator}.
@@ -26,17 +25,17 @@ public class PoseEstimator {
 	PoseErrorTracker errorTracker = new PoseErrorTracker();
 
 	/**
-	 * The number of occasions where the {@code Pose} of the robot was detected.
+	 * The number of non-{@code null} sample {@code Pose}s that have been given to this {@code PoseEstimator}.
 	 */
-	int posesDetected = 0;
+	int nonNullSamples = 0;
 
 	/**
-	 * The number of occasions where the {@code Pose} of the robot was not detected.
+	 * The number of {@code null} sample {@code Pose}s that have been given to this {@code PoseEstimator}.
 	 */
-	int poseDetectionFailures = 0;
+	int nullSamples = 0;
 
 	/**
-	 * The number of {@code Pose} outliers that have been detected by this {@code PoseEstimator}.
+	 * The number of {@code Pose}s that have been considered outliers by this {@code PoseEstimator}.
 	 */
 	int outliers = 0;
 
@@ -49,106 +48,107 @@ public class PoseEstimator {
 	 * Constructs a {@code PoseEstimator}.
 	 * 
 	 * @param distanceThreshold
-	 *            the distance threshold for outlier detection (i.e., the difference in x- or y-coordinates of the
-	 *            {@code Pose} from LimeLight compared to the {@code Pose} that has been estimated in order for the
-	 *            {@code Pose} from LimeLight to be considered an outlier)
+	 *            the distance threshold for outlier detection (a sample {@code Pose} is considered an outlier and
+	 *            rejected if its distance from the estimated {@code Pose} is larger than this threshold)
 	 */
 	public PoseEstimator(double distanceThreshold) {
 		this.distanceThreshold = distanceThreshold;
 	}
 
 	/**
-	 * Returns the {@code Pose} of a {@code Robot} estimated by this {@code PoseEstimator}.
+	 * Returns a {@code Pose} representing the pose estimated by this {@code PoseEstimator}.
 	 * 
-	 * @return the {@code Pose} of a {@code Robot} estimated by this {@code PoseEstimator}
+	 * @return a {@code Pose} representing the pose estimated by this {@code PoseEstimator}
 	 */
 	public Pose poseEstimated() {
-		return poseEstimated;
+		return estimatedPose;
 	}
 
 	/**
-	 * Updates this {@code PoseEstimator} based on the specified {@code Pose}.
+	 * Updates this {@code PoseEstimator} based on the specified sample {@code Pose}.
 	 * 
-	 * @param poseDetected
-	 *            the {@code Pose} from the LimeLight
-	 * @return {@code false} if the specified {@code Pose} seems like an outlier (because either the x- or the
-	 *         y-coordinate value of the {@code Pose} is different by more than the threshold compared to the
-	 *         {@code Pose} that has been estimated) and thus rejected; {@code true} if this {@code RobotPoseEstimator}
-	 *         is updated based on the specified {@code Pose}
+	 * @param sample
+	 *            a sample {@code Pose}
+	 * @return {@code false} if the specified sample {@code Pose} is considered an outlier (because the x- or
+	 *         y-coordinate value of the sample {@code Pose} is different by more than the threshold compared to the
+	 *         estimated {@code Pose}) and thus rejected; {@code true} if this {@code PoseEstimator} is updated based on
+	 *         the specified {@code Pose}
 	 */
-	public final synchronized boolean update(Pose poseDetected) {
-		if (poseDetected != null)
-			posesDetected++;
+	public final synchronized boolean update(Pose sample) {
+		if (sample != null)
+			nonNullSamples++;
 		else
-			poseDetectionFailures++;
-		if (isOutlier(poseDetected))
+			nullSamples++;
+		if (isOutlier(sample))
 			return false;
-		setPoseEstimated(poseDetected);
+		estimatedPose(sample);
 		return true;
 	}
 
 	/**
-	 * Returns the rate (the number of poses per second) at which the {@code Pose} of the robot has been detected.
+	 * Returns the rate (the number of sample {@code Pose}s per second) at which sample {@code Pose}s have been given to
+	 * this {@code PoseEstimator}.
 	 * 
-	 * @return the rate (the number of poses per second) at which the {@code Pose} of the robot has been detected
+	 * @return the rate (the number of sample {@code Pose}s per second) at which sample {@code Pose}s have been given to
+	 *         this {@code PoseEstimator}
 	 */
-	public double poseDetectionRate() {
+	public double samplingRate() {
 		double time = 0.001 * (System.currentTimeMillis() - startTime);
 		if (time > 0)
-			return posesDetected / time;
+			return nonNullSamples / time;
 		else
 			return 0;
 	}
 
 	/**
-	 * Returns the rate (the number of failures per second) at which the {@code Pose} of the robot has not been
-	 * detected.
+	 * Returns the rate at which {@code null} sample {@code Pose}s have been given to this {@code PoseEstimator}
 	 * 
-	 * @return the rate (the number of failures per second) at which the {@code Pose} of the robot has not been detected
+	 * @return the rate at which {@code null} sample {@code Pose}s have been given to this {@code PoseEstimator}
 	 */
-	public double poseDetectionFailureRate() {
+	public double samplingFailureRate() {
 		double time = 0.001 * (System.currentTimeMillis() - startTime);
 		if (time > 0)
-			return poseDetectionFailures / time;
+			return nullSamples / time;
 		else
 			return 0;
 	}
 
 	/**
-	 * Returns the number of {@code Pose} outliers that have been detected by this {@code PoseEstimator}.
+	 * Returns the number of outliers (i.e., sample {@code Pose}s that have been rejected by this
+	 * {@code PoseEstimator}).
 	 * 
-	 * @return the number of {@code Pose} outliers that have been detected by this {@code PoseEstimator}
+	 * @return the number of outliers (i.e., sample {@code Pose}s that have been rejected by this {@code PoseEstimator})
 	 */
 	public int outliers() {
 		return outliers;
 	}
 
 	/**
-	 * Returns the largest differences (in x- and y-coordinate values as well as directional angle values) between the
-	 * {@code Pose} estimated by this {@code RobotPoseEstimator} and the {@code Pose}s from the LimeLight.
+	 * Returns the largest differences (in x- and y-coordinate values as well as orientation values) between the
+	 * {@code Pose} estimated by this {@code PoseEstimator} and sample {@code Pose}s.
 	 * 
-	 * @return the largest differences (in x- and y-coordinate values as well as directional angle values) between the
-	 *         {@code Pose} estimated by this {@code RobotPoseEstimator} and the {@code Pose}s from the LimeLight
+	 * @return the largest differences (in x- and y-coordinate values as well as orientation values) between the
+	 *         {@code Pose} estimated by this {@code PoseEstimator} and sample {@code Pose}s
 	 */
 	public Pose largestPoseInconsistency() {
 		return errorTracker.largestPoseError();
 	}
 
 	/**
-	 * Determines whether or not the specified {@code Pose} is an outlier.
+	 * Determines whether or not the specified sample {@code Pose} is an outlier.
 	 * 
-	 * @param poseDetected
-	 *            the {@code Pose} from the LimeLight
-	 * @return {@code true} if either the x- or the y-coordinate value of the {@code Pose} is different by more than the
-	 *         threshold compared to the {@code Pose} that has been estimated; {@code false} otherwise (i.e., the
-	 *         specified {@code Pose} is not an outlier)
+	 * @param sample
+	 *            a sample {@code Pose}
+	 * @return {@code true} if either the x- or y-coordinate value of the sample {@code Pose} is different by more than
+	 *         the threshold compared to the estimated {@code Pose} maintained by this {@code PoseEstimator};
+	 *         {@code false} otherwise
 	 */
-	protected boolean isOutlier(Pose poseDetected) {
-		if (poseDetected == null || this.poseEstimated == null)
+	protected boolean isOutlier(Pose sample) {
+		if (sample == null || this.estimatedPose == null)
 			return false;
-		if (poseDetected.isInvalid())
+		if (sample.hasNaN())
 			return true;
-		Pose error = PoseErrorTracker.error(poseDetected, this.poseEstimated);
+		Pose error = PoseErrorTracker.error(sample, this.estimatedPose);
 		if (Math.abs(error.x()) > distanceThreshold || Math.abs(error.y()) > distanceThreshold) {
 			outliers++;
 			return true;
@@ -157,26 +157,16 @@ public class PoseEstimator {
 	}
 
 	/**
-	 * Updates the {@code Pose} that has been updated by this {@code PoseEstimator} based on the specified {@code Pose}
-	 * from the LimeLight
+	 * Updates the estimated {@code Pose} based on the specified sample {@code Pose}.
 	 * 
-	 * @param poseDetected
-	 *            the {@code Pose} from the LimeLight
+	 * @param sample
+	 *            a sample {@code Pose}
 	 */
-	protected void setPoseEstimated(Pose poseDetected) {
-		if (poseDetected != null) {
-			errorTracker.update(poseDetected, this.poseEstimated);
-			this.poseEstimated = poseDetected;
+	protected void estimatedPose(Pose sample) {
+		if (sample != null) {
+			errorTracker.update(sample, this.estimatedPose);
+			this.estimatedPose = sample;
 		}
-	}
-
-	/**
-	 * Returns the number of detected {@code Pose}s that have been given to this {@code PoseEstimator}.
-	 * 
-	 * @return the number of detected {@code Pose}s that have been given to this {@code PoseEstimator}
-	 */
-	public int posesDetected() {
-		return this.posesDetected;
 	}
 
 }

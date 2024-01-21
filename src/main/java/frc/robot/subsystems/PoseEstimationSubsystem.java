@@ -11,18 +11,40 @@ import hlib.drive.Pose;
 import hlib.drive.PoseEstimator;
 import hlib.drive.PoseEstimatorWeighted;
 
+/**
+ * The purpose of the {@code PoseEstimationSubsystem} is to provide the pose of
+ * the robot, each AprilTag, as well as others of interest. For stationary
+ * objects such AprilTags, it stores the corresponding {@code Pose}s and provide
+ * them as needed.
+ * For a moving object such as the robot, it estimates the pose based on variety
+ * of sources including LimeLight as well as encoders and sensors attached to
+ * the robot.
+ * 
+ * @author Andrew Hwang (u.andrew.h@gmail.com)
+ * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
+ */
 public class PoseEstimationSubsystem extends AprilTagSubsystem {
 
+	/**
+	 * The {@code PoseEstimator} for estimating the pose of the robot.
+	 */
 	PoseEstimator m_poseEstimator = new PoseEstimatorWeighted(1.0, 10, 0.1);
 
+	/**
+	 * A {@code Map} that maps the ID of each AprilTag to the {@code Pose} of that
+	 * AprilTag.
+	 */
 	Map<Integer, Pose> m_aprilTagPoses = new TreeMap<Integer, Pose>();
 
 	/**
-	 * The path to the "deploy" directory.
+	 * The path to the "deploy" directory in the project.
 	 */
 	public static String deployPath = "." + File.separator + "src" + File.separator + "main" + File.separator
 			+ "deploy";
 
+	/**
+	 * Constructs a {@code PoseEstimationSubsystem}.
+	 */
 	public PoseEstimationSubsystem() {
 		super();
 		try {
@@ -33,21 +55,38 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 		}
 	}
 
+	/**
+	 * Returns the {@code Pose} of the specified AprilTag.
+	 * 
+	 * @param tagID the ID of the AprilTag
+	 * @return the {@code Pose} of the specified AprilTag
+	 */
 	public Pose aprilTagPose(int tagID) {
 		return m_aprilTagPoses.get(tagID);
 	}
 
-	public static PoseEstimationSubsystem get() { // returns the first instance called, guarantees that there's not
+	/**
+	 * Returns the single {@code PoseEstimationSubsystem} instantiated in compliance
+	 * with the singleton design pattern.
+	 * 
+	 * @return the single {@code PoseEstimationSubsystem} instantiated in compliance
+	 *         with the singleton design pattern
+	 */
+	public static PoseEstimationSubsystem get() {
 		return (PoseEstimationSubsystem) s_subsystem;
 	}
 
 	/**
-	 * A method run periodically (every 20 ms).
+	 * Is invoked periodically (every 20 ms approximately).
 	 */
 	@Override
 	public void periodic() {
 	}
 
+	/**
+	 * Is invoked whenever there is a change in the {@code NetworkTable} entry
+	 * representing the pose of the robot.
+	 */
 	TimestampedDoubleArray changedBotPose(NetworkTableEvent event) {
 		var botpose = super.changedBotPose(event);
 		if (botpose != null) {
@@ -56,16 +95,21 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 			var poseEstimated = m_poseEstimator.poseEstimated();
 			visionTable.getEntry("Pose2D'").setDoubleArray(
 					new double[] { poseEstimated.x(), poseEstimated.y(),
-							poseEstimated.directionalAngleInDegrees() });
-			// visionTable.getEntry("Pose2D'").setString(
-			// "" + poseEstimated);
-
+							poseEstimated.yawInDegrees() });
 		}
 		return botpose;
 	}
 
+	/**
+	 * Returns a {@code Pose} representing the estimated pose of the robot.
+	 * 
+	 * @return a {@code Pose} representing the estimated pose of the robot
+	 *         ({@code null} if it has not been possible to reliably estimate the
+	 *         pose of the robot)
+	 */
 	public Pose poseEstimated() {
-		return m_poseEstimator.poseEstimated();
+		var pose = m_poseEstimator.poseEstimated();
+		return pose == null || pose.hasNaN() || pose.equals(Pose.DEFAULT_POSE) ? null : pose;
 	}
 
 }

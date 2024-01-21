@@ -38,8 +38,8 @@ public class RobotContainer implements frc.robot.util.RobotContainer {
 		Supplier<Double> c = () -> {
 			Pose pose = m_poseEstimationSubsystem.poseEstimated();
 			if (pose != null) {
-				System.out.println(pose.angleInDegrees(target) + ", " + pose.directionalAngleInDegrees());
-				return pose.angleInDegrees(target) - pose.directionalAngleInDegrees();
+				System.out.println(pose.angleInDegrees(target) + ", " + pose.yawInDegrees());
+				return pose.angleInDegrees(target) - pose.yawInDegrees();
 			}
 			return null;
 		};

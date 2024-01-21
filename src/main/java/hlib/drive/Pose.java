@@ -1,7 +1,7 @@
 package hlib.drive;
 
 /**
- * A {@code Pose} represents a pose (i.e., a position with a direction) in a 2-dimensional space.
+ * A {@code Pose} represents a pose, defined as a position with an orientation (direction) in a 2-dimensional space.
  * 
  * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
  * @author Andrew Hwang (u.andrew.h@gmail.com)
@@ -9,9 +9,14 @@ package hlib.drive;
 public class Pose extends Position {
 
 	/**
-	 * The directional angle (in radians) of this {@code Pose}.
+	 * The default {@code Pose} located at the origin of the space.
 	 */
-	protected double directionalAngle;
+	public static final Pose DEFAULT_POSE = new Pose(0, 0, 0);
+
+	/**
+	 * The orientation of this {@code Pose}, expressed as a yaw value in radians.
+	 */
+	protected double yaw;
 
 	/**
 	 * Constructs a {@code Pose}.
@@ -20,12 +25,12 @@ public class Pose extends Position {
 	 *            the x-coordinate value of the {@code Pose}
 	 * @param y
 	 *            the y-coordinate value of the {@code Pose}
-	 * @param directionalAngleInRadians
-	 *            the directional angle (in radians) of the {@code Pose}
+	 * @param yawInRadians
+	 *            the orientation of the {@code Pose} in radians
 	 */
-	public Pose(double x, double y, double directionalAngleInRadians) {
+	public Pose(double x, double y, double yawInRadians) {
 		super(x, y);
-		this.directionalAngle = normalize(directionalAngleInRadians);
+		this.yaw = normalize(yawInRadians);
 	}
 
 	/**
@@ -33,29 +38,29 @@ public class Pose extends Position {
 	 * 
 	 * @param p
 	 *            the {@code Position} of the {@code Pose}
-	 * @param directionalAngleInRadians
-	 *            the directional angle (in radians) of the {@code Pose}
+	 * @param yawInRadians
+	 *            the orientation of the {@code Pose} in radians
 	 */
-	public Pose(Position p, double directionalAngleInRadians) {
-		this(p.x, p.y, directionalAngleInRadians);
+	public Pose(Position p, double yawInRadians) {
+		this(p.x, p.y, yawInRadians);
 	}
 
 	/**
-	 * Returns the directional angle (in radians) of this {@code Pose}.
+	 * Returns the orientation of this {@code Pose}, expressed as a yaw value in radians.
 	 * 
-	 * @return the directional angle (in radians) of this {@code Pose}
+	 * @return the orientation of this {@code Pose}, expressed as a yaw value in radians
 	 */
-	public double directionalAngleInRadians() {
-		return directionalAngle;
+	public double yawInRadians() {
+		return yaw;
 	}
 
 	/**
-	 * Returns the directional angle (in degrees) of this {@code Pose}.
+	 * Returns the orientation of this {@code Pose}, expressed as a yaw value in degrees.
 	 * 
-	 * @return the directional angle (in degrees) of this {@code Pose}
+	 * @return the orientation of this {@code Pose}, expressed as a yaw value in degrees
 	 */
-	public double directionalAngleInDegrees() {
-		return directionalAngle * 180 / Math.PI;
+	public double yawInDegrees() {
+		return yaw * 180 / Math.PI;
 	}
 
 	/**
@@ -65,7 +70,7 @@ public class Pose extends Position {
 	 */
 	@Override
 	public String toString() {
-		return String.format("(%.3f, %.3f, %.1f degrees)", x, y, directionalAngle * 180 / Math.PI);
+		return String.format("(%.3f, %.3f, %.1f degrees)", x, y, yaw * 180 / Math.PI);
 	}
 
 	/**
@@ -77,7 +82,7 @@ public class Pose extends Position {
 	public boolean equals(Object o) {
 		if (o instanceof Pose) {
 			Pose p = (Pose) o;
-			return super.equals(p) && this.directionalAngle == p.directionalAngle;
+			return super.equals(p) && this.yaw == p.yaw;
 		} else
 			return false;
 	}
@@ -87,34 +92,32 @@ public class Pose extends Position {
 	 * 
 	 * @param other
 	 *            a {@code Pose}
-	 * @return the {@code Pose} after adding this {@code Pose} and the specified {@code Pose}
+	 * @return the {@code Pose} resulting from adding this {@code Pose} and the specified {@code Pose}
 	 */
 	public Pose add(Pose other) {
-		Position o = other.rotate(directionalAngle + other.directionalAngle);
-		return new Pose(x + o.x, y + o.y, directionalAngle + other.directionalAngle);
+		Position o = other.rotate(yaw + other.yaw);
+		return new Pose(x + o.x, y + o.y, yaw + other.yaw);
 	}
 
 	/**
-	 * Returns the {@code Pose} after moving this {@code Pose} along the direction of this {@code Pose} by the specified
-	 * magnitude.
+	 * Returns the {@code Pose} resulting from moving this {@code Pose} forward in its current direction by the
+	 * specified magnitude.
 	 * 
 	 * @param magnitude
 	 *            the magnitude of movement
-	 * @return the {@code Pose} after moving this {@code Pose} along the direction of this {@code Pose} by the specified
-	 *         magnitude
+	 * @return the {@code Pose} resulting from moving this {@code Pose} forward in its current direction by the
+	 *         specified magnitude
 	 */
 	public Pose move(double magnitude) {
-		return new Pose(x + magnitude * Math.cos(directionalAngle), y + magnitude * Math.sin(directionalAngle),
-				directionalAngle);
+		return new Pose(x + magnitude * Math.cos(yaw), y + magnitude * Math.sin(yaw), yaw);
 	}
 
 	/**
-	 * Converts the specified angle (in radians) to the corresponding angle (in radians) between -Math.PI (exclusive)
-	 * and Math.PI (inclusive).
+	 * Normalizes the specified angle in radians to the range (-Math.PI, Math.PI].
 	 * 
 	 * @param angleInRadians
-	 *            an angle (in radians)
-	 * @return the corresponding angle (in radians) between -Math.PI (exclusive) and Math.PI (inclusive)
+	 *            an angle in radians
+	 * @return the normalized angle in the range (-Math.PI, Math.PI]
 	 */
 	public static double normalize(double angleInRadians) {
 		if (-Math.PI < angleInRadians && angleInRadians <= Math.PI)
@@ -124,12 +127,12 @@ public class Pose extends Position {
 	}
 
 	/**
-	 * Determines whether or not this {@code Pose} has an invalid value (e.g., NaN).
+	 * Determines whether or not any coordinate or yaw value of this {@code Pose} is NaN.
 	 * 
-	 * @return {@code true} if this {@code Pose} has an invalid value (e.g., NaN); {@code false} otherwise
+	 * @return {@code true} if any coordinate or yaw value of this {@code Pose} is NaN; {@code false} otherwise
 	 */
-	public boolean isInvalid() {
-		return x == Double.NaN || y == Double.NaN || directionalAngle == Double.NaN;
+	public boolean hasNaN() {
+		return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(yaw);
 	}
 
 }

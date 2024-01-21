@@ -74,26 +74,26 @@ public class Position {
 	}
 
 	/**
-	 * Returns the angle (in radians) between the x-axis and the line from the current {@code Position} to the specified
-	 * {@code Position}.
+	 * Returns the angle in radians from this {@code Position} to the specified {@code Position} measured from the
+	 * positive x-axis.
 	 * 
 	 * @param p
-	 *            a {@code Position}
-	 * @return the angle (in radians) between the x-axis and the line from the current {@code Position} to the specified
-	 *         {@code Position}
+	 *            a {@code Position} to which the angle is to be measured
+	 * @return the angle in radians from this {@code Position} to the specified {@code Position} measured from the
+	 *         positive x-axis
 	 */
 	public double angleInRadians(Position p) {
 		return Math.atan2(p.y - y, p.x - x);
 	}
 
 	/**
-	 * Returns the angle (in degrees) between the x-axis and the line from the current {@code Position} to the specified
-	 * {@code Position}.
+	 * Returns the angle in degrees from this {@code Position} to the specified {@code Position} measured from the
+	 * positive x-axis.
 	 * 
 	 * @param p
-	 *            a {@code Position}
-	 * @return the angle (in degrees) between the x-axis and the line from the current {@code Position} to the specified
-	 *         {@code Position}
+	 *            a {@code Position} to which the angle is to be measured
+	 * @return the angle in degrees from this {@code Position} to the specified {@code Position} measured from the
+	 *         positive x-axis
 	 */
 	public double angleInDegrees(Position p) {
 		return angleInRadians(p) * 180 / Math.PI;
@@ -103,7 +103,7 @@ public class Position {
 	 * Returns the distance between this {@code Position} and the specified {@code Position}.
 	 * 
 	 * @param p
-	 *            another {@code Position}
+	 *            a {@code Position}
 	 * @return the distance between this {@code Position} and the specified {@code Position}
 	 */
 	public double distance(Position p) {
@@ -113,11 +113,13 @@ public class Position {
 	}
 
 	/**
-	 * Returns the {@code Position} after rotating this {@code Position} about the origin by the specified angle.
+	 * Returns the {@code Position} resulting from rotating this {@code Position} around the origin by the specified
+	 * angle in radians.
 	 * 
 	 * @param angleInRadians
-	 *            an angle (in radians)
-	 * @return the {@code Position} after rotating this {@code Position} about the origin by the specified angle
+	 *            an angle in radians
+	 * @return the {@code Position} resulting from rotating this {@code Position} around the origin by the specified
+	 *         angle in radians
 	 */
 	public Position rotate(double angleInRadians) {
 		return new Position(Math.cos(angleInRadians) * x - Math.sin(angleInRadians) * y,
@@ -125,11 +127,11 @@ public class Position {
 	}
 
 	/**
-	 * Returns the {@code Position} after translating this {@code Position} by the specified {@code Position}.
+	 * Returns the {@code Position} resulting from translating this {@code Position} by the coordinates of the specified {@code Position}.
 	 * 
 	 * @param p
-	 *            another {@code Position}
-	 * @return the {@code Position} after translating this {@code Position} by the specified {@code Position}
+	 *            a {@code Position}
+	 * @return the {@code Position} resulting from translating this {@code Position} by the coordinates of the specified {@code Position}
 	 */
 	public Position translate(Position p) {
 		return new Position(x + p.x, y + p.y);

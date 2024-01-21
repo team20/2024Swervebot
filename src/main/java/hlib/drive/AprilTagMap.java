@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A {@code AprilTagMap} maps each AprilTag ID to the 3D transform representing the pose of the corresponding AprilTag.
+ * A {@code AprilTagMap} maps the ID of each AprilTag to the 3D transform representing the pose of that AprilTag.
  * 
  * @author Jeong-Hyon Hwang (jhhbrown@gmail.com)
  * @author Andrew Hwang (u.andrew.h@gmail.com)
@@ -18,11 +18,10 @@ public class AprilTagMap extends HashMap<Integer, double[]> {
 	/**
 	 * The automatically generated serial version UID.
 	 */
-
-	private static final long serialVersionUID = -4059710587055947756L;
+	private static final long serialVersionUID = -7392062114679722757L;
 
 	/**
-	 * Constructs an {@code AprilTagMap} by parsing the specified file.
+	 * Constructs an {@code AprilTagMap} by parsing the specified JSON file.
 	 * 
 	 * @param fileName
 	 *            the name of the file
