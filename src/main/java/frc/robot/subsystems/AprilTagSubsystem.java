@@ -80,7 +80,8 @@ public class AprilTagSubsystem extends SubsystemBase {
 		try {
 			var v = event.valueData.value;
 			botpose = new TimestampedDoubleArray(v.getTime(), v.getServerTime(), v.getDoubleArray());
-			visionTable.getEntry("Pose2D").setDoubleArray(toPose2D(botpose.value));
+			visionTable.getEntry("Pose2D")
+					.setDoubleArray(toPose2DAdvantageScope(botpose.value[0], botpose.value[1], botpose.value[5]));
 			return botpose;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -118,8 +119,8 @@ public class AprilTagSubsystem extends SubsystemBase {
 		return m;
 	}
 
-	static double[] toPose2D(double[] botpose) {
-		return new double[] { botpose[0] + 8.27, botpose[1] + 4.1, botpose[5] };
+	static double[] toPose2DAdvantageScope(double x, double y, double angleInDegrees) {
+		return new double[] { x + 8.27, y + 4.1, angleInDegrees * Math.PI / 180 };
 	}
 
 	String toString(Map<String, double[]> m) {

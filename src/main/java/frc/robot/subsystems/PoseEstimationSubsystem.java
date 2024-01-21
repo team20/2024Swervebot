@@ -90,12 +90,15 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 	TimestampedDoubleArray changedBotPose(NetworkTableEvent event) {
 		var botpose = super.changedBotPose(event);
 		if (botpose != null) {
-			double[] pose = toPose2D(botpose.value);
-			m_poseEstimator.update(new Pose(pose[0], pose[1], pose[2] * Math.PI / 180));
-			var poseEstimated = m_poseEstimator.poseEstimated();
+			m_poseEstimator.update(new Pose(botpose.value[0], botpose.value[1], botpose.value[5] * Math.PI / 180));
+			var estimatedPose = m_poseEstimator.estimatedPose();
 			visionTable.getEntry("Pose2D'").setDoubleArray(
-					new double[] { poseEstimated.x(), poseEstimated.y(),
-							poseEstimated.yawInDegrees() });
+					new double[] { estimatedPose.x(), estimatedPose.y(),
+							estimatedPose.yawInDegrees() });
+			visionTable.getEntry("Pose Estimated").setString("" + estimatedPose());
+			if (estimatedPose != null)
+				visionTable.getEntry("Pose2D'").setDoubleArray(toPose2DAdvantageScope(estimatedPose.x(),
+						estimatedPose.y(), estimatedPose.yawInDegrees()));
 		}
 		return botpose;
 	}
@@ -107,9 +110,8 @@ public class PoseEstimationSubsystem extends AprilTagSubsystem {
 	 *         ({@code null} if it has not been possible to reliably estimate the
 	 *         pose of the robot)
 	 */
-	public Pose poseEstimated() {
-		var pose = m_poseEstimator.poseEstimated();
+	public Pose estimatedPose() {
+		var pose = m_poseEstimator.estimatedPose();
 		return pose == null || pose.hasNaN() || pose.equals(Pose.DEFAULT_POSE) ? null : pose;
 	}
-
 }

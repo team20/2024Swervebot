@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.aster.subsystems.DriveSubsystem;
 import frc.aster.Constants.ControllerConstants;
 import frc.aster.commands.drive.DefaultDriveCommand;
-
+import frc.aster.commands.drive.DriveDistanceCommand;
 import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.PoseEstimationSubsystem;
 import hlib.drive.Pose;
@@ -35,7 +35,7 @@ public class RobotContainer implements frc.robot.util.RobotContainer {
 		// ControllerConstants.Button.kTriangle)
 		// .whileTrue(new TurnCommand(30));
 		var target = new Position(6.809, -3.859);
-		Supplier<Double> c = () -> {
+		Supplier<Double> turnSupplier = () -> {
 			Pose pose = m_poseEstimationSubsystem.poseEstimated();
 			if (pose != null) {
 				System.out.println(pose.angleInDegrees(target) + ", " + pose.yawInDegrees());
@@ -43,8 +43,17 @@ public class RobotContainer implements frc.robot.util.RobotContainer {
 			}
 			return null;
 		};
+		Supplier<Double> driveSupplier = () -> {
+			Pose pose = m_poseEstimationSubsystem.poseEstimated();
+			if (pose != null) {
+				System.out.println(pose.distance(target) + "from 1 meter away");
+				return 1 - pose.distance(target);
+			}
+			return null;
+		};
 		new JoystickButton(m_operatorController, ControllerConstants.Button.kTriangle)
-				.whileTrue(new TurnCommand(c));
+				.onTrue(new TurnCommand(turnSupplier, 2)
+						.andThen(new DriveDistanceCommand(driveSupplier, 0.1)));
 	}
 
 	public Command getAutonomousCommand() {
