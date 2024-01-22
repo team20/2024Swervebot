@@ -100,6 +100,27 @@ public class Pose extends Position {
 	}
 
 	/**
+	 * Returns the average of the specified {@code Pose}s.
+	 * 
+	 * @param poses
+	 *            {@code Pose}s
+	 * @return the average of the specified {@code Pose}s
+	 */
+	public static Pose avarage(Pose... poses) {
+		if (poses == null || poses.length == 0)
+			return null;
+		double x = 0;
+		double y = 0;
+		double yaw = 0;
+		for (var pose : poses) {
+			x += pose.x;
+			y += pose.y;
+			yaw += pose.yaw;
+		}
+		return new Pose(x / poses.length, y / poses.length, yaw / poses.length);
+	}
+
+	/**
 	 * Returns the {@code Pose} resulting from moving this {@code Pose} forward in its current direction by the
 	 * specified magnitude.
 	 * 
