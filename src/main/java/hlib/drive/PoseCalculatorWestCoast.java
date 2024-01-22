@@ -13,7 +13,7 @@ public abstract class PoseCalculatorWestCoast implements PoseCalculator {
 	 * The last left wheel encoder position provided to this {@code PoseCalculatorWestCoast}.
 	 */
 	protected Double leftEncoderPosition = null;
-	
+
 	/**
 	 * The last right wheel encoder position provided to this {@code PoseCalculatorWestCoast}.
 	 */
@@ -23,6 +23,23 @@ public abstract class PoseCalculatorWestCoast implements PoseCalculator {
 	 * The last yaw value in radians provided to this {@code PoseCalculatorWestCoast}.
 	 */
 	protected Double yaw = null;
+
+	/**
+	 * The width of the drivetrain in meters.
+	 */
+	protected double width;
+
+	/**
+	 * Constructs a {@code PoseCalculatorWestCoast} whose purpose is to calculate the pose of a west coast drivetrain
+	 * based on the pose of that drivetrain at an earlier time and the changes in that drivetrain observed via a
+	 * gyroscope and wheel encoders.
+	 * 
+	 * @param width
+	 *            the width of the drivetrain in meters
+	 */
+	public PoseCalculatorWestCoast(double width) {
+		this.width = width;
+	}
 
 	/**
 	 * Calculates the current pose of a west coast drivetrain based on the pose of that drivetrain at an earlier time

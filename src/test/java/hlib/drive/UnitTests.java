@@ -45,6 +45,7 @@ public class UnitTests {
 			System.out.println(String.format("{\"id\": \"%s\", \"pose\": [%.3f, %.3f, %.1f]}%s", e.getKey(), pose.x(),
 					pose.y(), pose.yawInDegrees(), i.hasNext() ? "," : ""));
 		}
+		assertEquals(16, m.size());
 	}
 
 	@Test
@@ -52,7 +53,7 @@ public class UnitTests {
 		var p = new PoseEstimatorWeighted(1.0, 10, 0.1);
 		p.update(new Pose(0, 0, 0));
 		p.update(new Pose(0.1, 0.1, 0));
-		p.add(new PoseCalculatorWestCoast() {
+		p.add(new PoseCalculatorWestCoast(1.0) {
 
 			double v = 0.0;
 
