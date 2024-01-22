@@ -89,7 +89,7 @@ public class DriveDistanceCommand extends Command {
 	 */
 	public DriveDistanceCommand(Supplier<Double> targetDistanceCalculator, double distanceTolerance) {
 		m_targetDistanceCalculator = targetDistanceCalculator;
-		double kP = .5, kI = 0.0, kD = 0.0;
+		double kP = .2, kI = 0.0, kD = 0.0;
 		var constraints = new TrapezoidProfile.Constraints(3, 2);
 		m_leftController = new ProfiledPIDController(kP, kI, kD, constraints);
 		m_rightController = new ProfiledPIDController(kP, kI, kD, constraints);
